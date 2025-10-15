@@ -39,7 +39,7 @@ The application uses a registry-based architecture for handling multiple map typ
 
 **Central Store Pattern:**
 - Pinia-based map store manages global application state
-- Reactive selectedEntries trigger automatic map re-rendering
+- Reactive selectedFormControls trigger automatic map re-rendering
 - Async loading states with error handling
 - Computed properties provide derived data to components
 

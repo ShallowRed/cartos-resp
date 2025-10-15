@@ -6,7 +6,7 @@ export const eloignementConfig: ServiceConfig = {
   id: 'eloignement',
   title: 'Éloignements des populations aux équipements ou services publics',
   dataFile: '/data/eloignement.csv',
-  entries: {
+  formControls: {
     metric: [
       { label: '5 minutes', key: '5min' },
       { label: '10 minutes', key: '10min' },
@@ -58,7 +58,7 @@ export const eloignementConfig: ServiceConfig = {
 export const eloignementService = new MapService({
   title: eloignementConfig.title,
   dataFile: eloignementConfig.dataFile,
-  entries: eloignementConfig.entries,
+  formControls: eloignementConfig.formControls,
 })
 
 export const renderEloignementMap = createServiceRenderer(eloignementConfig)

@@ -85,7 +85,7 @@ export interface MapRenderer {
 export interface MapServiceOptions {
   title: string
   dataFile: string
-  entries: Record<string, InputEntry[]>
+  formControls: Record<string, InputEntry[]>
 }
 
 /**
@@ -95,8 +95,8 @@ export interface MapService {
   title: string
   dataFile: string
   data: ServiceDataRow[]
-  entries: Map<string, InputEntry[]>
-  selectedEntries: Map<string, string>
+  formControls: Map<string, InputEntry[]>
+  selectedFormControls: Map<string, string>
 
   loadData: () => Promise<void>
   getSelectedEntry: (entryKey: string) => string | undefined

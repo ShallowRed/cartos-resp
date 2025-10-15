@@ -6,7 +6,7 @@ export const couvertureConfig: ServiceConfig = {
   id: 'couverture',
   title: 'Couverture des équipements et services',
   dataFile: '/data/couverture.csv',
-  entries: {
+  formControls: {
     metric: [
       { label: '% de la population couverte', key: 'pct_pop' },
       { label: '% des communes équipées', key: 'pct_communes' },
@@ -79,7 +79,7 @@ export const couvertureConfig: ServiceConfig = {
 export const couvertureService = new MapService({
   title: couvertureConfig.title,
   dataFile: couvertureConfig.dataFile,
-  entries: couvertureConfig.entries,
+  formControls: couvertureConfig.formControls,
 })
 
 export const renderCouvertureMap = createServiceRenderer(couvertureConfig)

@@ -6,21 +6,21 @@ export default class MapService {
   title: string
   dataFile: string
   data: ServiceDataRow[] = []
-  entries: Map<string, InputEntry[]>
-  selectedEntries: Map<string, string> = new Map() // key: entry key, value: selected entry key
+  formControls: Map<string, InputEntry[]>
+  selectedFormControls: Map<string, string> = new Map() // key: entry key, value: selected entry key
   version = ref(0) // Reactive trigger for UI updates
 
   constructor({
     title,
     dataFile,
-    entries,
+    formControls,
   }: MapServiceOptions) {
     this.title = title
     this.dataFile = dataFile
-    this.entries = new Map(Object.entries(entries))
-    for (const [entryKey, entryOptions] of this.entries) {
+    this.formControls = new Map(Object.entries(formControls))
+    for (const [entryKey, entryOptions] of this.formControls) {
       if (entryOptions?.[0] != null) {
-        this.selectedEntries.set(entryKey, entryOptions[0].key)
+        this.selectedFormControls.set(entryKey, entryOptions[0].key)
       }
     }
   }
@@ -30,11 +30,11 @@ export default class MapService {
   }
 
   getSelectedEntry(entryKey: string): string | undefined {
-    return this.selectedEntries.get(entryKey)
+    return this.selectedFormControls.get(entryKey)
   }
 
   setSelectedEntry(entryKey: string, selectedKey: string) {
-    this.selectedEntries.set(entryKey, selectedKey)
+    this.selectedFormControls.set(entryKey, selectedKey)
     this.version.value++
   }
 
@@ -43,12 +43,12 @@ export default class MapService {
     if (!selectedKey) {
       return undefined
     }
-    const entryOptions = this.entries.get(entryKey)
+    const entryOptions = this.formControls.get(entryKey)
     return entryOptions?.find(e => e.key === selectedKey)?.label
   }
 
   get filteredData(): ServiceDataRow[] {
-    const selectedFacility = this.selectedEntries.get('facility')
+    const selectedFacility = this.selectedFormControls.get('facility')
     if (!selectedFacility) {
       return this.data
     }

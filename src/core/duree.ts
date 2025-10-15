@@ -6,7 +6,7 @@ export const dureeConfig: ServiceConfig = {
   id: 'duree',
   title: 'Durées d\'accès aux équipements ou services publics',
   dataFile: '/data/duree.csv',
-  entries: {
+  formControls: {
     metric: [
       { label: 'valeur médiane', key: 'mediane' },
       { label: 'valeur moyenne', key: 'moyenne' },
@@ -44,7 +44,7 @@ export const dureeConfig: ServiceConfig = {
 export const dureeService = new MapService({
   title: dureeConfig.title,
   dataFile: dureeConfig.dataFile,
-  entries: dureeConfig.entries,
+  formControls: dureeConfig.formControls,
 })
 
 export const renderDureeMap = createServiceRenderer(dureeConfig)

@@ -67,7 +67,7 @@ export interface ServiceConfig {
   dataFile: string
 
   /** Entry definitions for form controls */
-  entries: Record<string, Array<{ label: string, key: string }>>
+  formControls: Record<string, Array<{ label: string, key: string }>>
 
   /** Rendering configuration */
   rendering: ServiceRenderConfig

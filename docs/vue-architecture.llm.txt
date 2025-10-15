@@ -19,7 +19,7 @@
 
 **SelectInput.vue** 
 - Generic select component for facility and metric selections
-- TypeScript props interface with entries array and modelValue
+- TypeScript props interface with formControls array and modelValue
 - DaisyUI form-control and select styling
 - Emits update:modelValue for Vue 3 v-model compatibility
 
@@ -36,13 +36,13 @@ The application uses centralized state management through the useMapStore:
 
 **Store Structure:**
 - MapRegistry instance with four registered services
-- Reactive refs for currentMapId, geoData, selectedEntries, loading/error states
-- Computed properties for currentService, currentRenderer, entriesMap, availableMaps
+- Reactive refs for currentMapId, geoData, selectedFormControls, loading/error states
+- Computed properties for currentService, currentRenderer, formControlsMap, availableMaps
 - Actions for setCurrentMap, setSelectedEntry, getSelectedEntry, initialize
 
 **Reactive Dependencies:**
 - Components bind to store via storeToRefs for reactive updates
-- selectedEntries object maintains per-service default selections
+- selectedFormControls object maintains per-service default selections
 - Store handles async operations (geodata loading, service data loading)
 - Error states propagate to UI for user feedback
 

@@ -35,10 +35,10 @@ export const useMapStore = defineStore('map', () => {
     return currentMapEntry.value?.renderer || null
   })
 
-  const entriesMap = computed(() => {
+  const formControlsMap = computed(() => {
     if (!currentService.value)
       return []
-    return Array.from(currentService.value.entries.entries())
+    return Array.from(currentService.value.formControls.entries())
   })
 
   const availableMaps = computed(() => {
@@ -119,7 +119,7 @@ export const useMapStore = defineStore('map', () => {
     // Getters
     currentService,
     currentRenderer,
-    entriesMap,
+    formControlsMap,
     availableMaps,
 
     // Actions

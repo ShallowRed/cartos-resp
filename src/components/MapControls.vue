@@ -42,13 +42,13 @@ const { currentService } = storeToRefs(mapStore)
           Indicateurs
         </legend>
         <div
-          v-for="[key, entries] in mapStore.entriesMap"
+          v-for="[key, formControls] in mapStore.formControlsMap"
           :key="key"
           class="fieldset"
         >
           <SelectInput
             :label="key"
-            :entries="entries"
+            :form-controls="formControls"
             :model-value="mapStore.getSelectedEntry(key)"
             @update:model-value="(value: any) => value && mapStore.setSelectedEntry(key, value)"
           />
