@@ -38,7 +38,7 @@ export const useMapStore = defineStore('map', () => {
   const formControls = computed(() => {
     if (!currentService.value)
       return []
-    return Array.from(currentService.value.formControls.entries())
+    return currentService.value.formControls
   })
 
   const availableMaps = computed(() => {

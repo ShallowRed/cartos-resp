@@ -1,4 +1,4 @@
-import type { InputEntry, MapServiceOptions, ServiceDataRow } from '@/types/service.types'
+import type { FormControl, MapServiceOptions, ServiceDataRow } from '@/types/service.types'
 import { ref } from 'vue'
 import { loadCachedCSVData } from '@/data/data-cache'
 
@@ -6,7 +6,7 @@ export default class MapService {
   title: string
   dataFile: string
   data: ServiceDataRow[] = []
-  formControls: Map<string, InputEntry[]>
+  formControls: FormControl[]
   selectedFormControls: Map<string, string> = new Map() // key: entry key, value: selected entry key
   version = ref(0) // Reactive trigger for UI updates
 
@@ -17,10 +17,10 @@ export default class MapService {
   }: MapServiceOptions) {
     this.title = title
     this.dataFile = dataFile
-    this.formControls = new Map(Object.entries(formControls))
-    for (const [entryKey, entryOptions] of this.formControls) {
-      if (entryOptions?.[0] != null) {
-        this.selectedFormControls.set(entryKey, entryOptions[0].key)
+    this.formControls = formControls
+    for (const control of this.formControls) {
+      if (control.entries?.[0] != null) {
+        this.selectedFormControls.set(control.key, control.entries[0].key)
       }
     }
   }
@@ -43,8 +43,8 @@ export default class MapService {
     if (!selectedKey) {
       return undefined
     }
-    const entryOptions = this.formControls.get(entryKey)
-    return entryOptions?.find(e => e.key === selectedKey)?.label
+    const formControl = this.formControls.find(control => control.key === entryKey)
+    return formControl?.entries.find(entry => entry.key === selectedKey)?.label
   }
 
   get filteredData(): ServiceDataRow[] {

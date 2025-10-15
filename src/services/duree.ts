@@ -6,16 +6,24 @@ export const dureeConfig: ServiceConfig = {
   id: 'duree',
   title: 'Durées d\'accès aux équipements ou services publics',
   dataFile: '/data/duree.csv',
-  formControls: {
-    metric: [
-      { label: 'valeur médiane', key: 'mediane' },
-      { label: 'valeur moyenne', key: 'moyenne' },
-    ],
-    facility: [
-      { label: 'Police', key: 'police' },
-      { label: 'Gendarmerie', key: 'gendarmerie' },
-    ],
-  },
+  formControls: [
+    {
+      key: 'metric',
+      name: 'Indicateur',
+      entries: [
+        { label: 'valeur médiane', key: 'mediane' },
+        { label: 'valeur moyenne', key: 'moyenne' },
+      ],
+    },
+    {
+      key: 'facility',
+      name: 'Service',
+      entries: [
+        { label: 'Police', key: 'police' },
+        { label: 'Gendarmerie', key: 'gendarmerie' },
+      ],
+    },
+  ],
   rendering: {
     titleTemplates: {
       mediane: 'Durée médiane d\'accès à l\'équipement ou service "{facility}"',

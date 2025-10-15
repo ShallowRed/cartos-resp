@@ -15,6 +15,15 @@ export interface InputEntry {
 }
 
 /**
+ * Form control definition with grouped entries
+ */
+export interface FormControl {
+  key: string
+  name: string
+  entries: InputEntry[]
+}
+
+/**
  * CSV data row - generic shape for all service data
  */
 export interface ServiceDataRow {
@@ -85,7 +94,7 @@ export interface MapRenderer {
 export interface MapServiceOptions {
   title: string
   dataFile: string
-  formControls: Record<string, InputEntry[]>
+  formControls: FormControl[]
 }
 
 /**
@@ -95,7 +104,7 @@ export interface MapService {
   title: string
   dataFile: string
   data: ServiceDataRow[]
-  formControls: Map<string, InputEntry[]>
+  formControls: FormControl[]
   selectedFormControls: Map<string, string>
 
   loadData: () => Promise<void>

@@ -1,4 +1,4 @@
-import type { ServiceDataRow } from '@/types/service.types'
+import type { FormControl, ServiceDataRow } from '@/types/service.types'
 
 /**
  * Template string interpolation for dynamic titles
@@ -14,7 +14,7 @@ export interface TitleTemplate {
 export interface MetricColorScheme {
   scheme: string
   label: string
-  type?: 'quantize' | 'quantile' | 'threshold'
+  type?: 'quantize' | 'quantile' | 'threshold' | 'diverging'
   domain?: number[]
   percent?: boolean
   legend?: boolean
@@ -67,7 +67,7 @@ export interface ServiceConfig {
   dataFile: string
 
   /** Entry definitions for form controls */
-  formControls: Record<string, Array<{ label: string, key: string }>>
+  formControls: FormControl[]
 
   /** Rendering configuration */
   rendering: ServiceRenderConfig

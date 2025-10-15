@@ -6,22 +6,30 @@ export const eloignementConfig: ServiceConfig = {
   id: 'eloignement',
   title: 'Éloignements des populations aux équipements ou services publics',
   dataFile: '/data/eloignement.csv',
-  formControls: {
-    metric: [
-      { label: '5 minutes', key: '5min' },
-      { label: '10 minutes', key: '10min' },
-      { label: '15 minutes', key: '15min' },
-      { label: '20 minutes', key: '20min' },
-      { label: '30 minutes', key: '30min' },
-      { label: '45 minutes', key: '45min' },
-      { label: '60 minutes', key: '60min' },
-    ],
-    facility: [
-      { label: 'Police', key: 'police' },
-      { label: 'Gendarmerie', key: 'gendarmerie' },
-      { label: 'Bureau de poste', key: 'bureau_de_poste' },
-    ],
-  },
+  formControls: [
+    {
+      key: 'metric',
+      name: 'Temps d\'accès',
+      entries: [
+        { label: '5 minutes', key: '5min' },
+        { label: '10 minutes', key: '10min' },
+        { label: '15 minutes', key: '15min' },
+        { label: '20 minutes', key: '20min' },
+        { label: '30 minutes', key: '30min' },
+        { label: '45 minutes', key: '45min' },
+        { label: '60 minutes', key: '60min' },
+      ],
+    },
+    {
+      key: 'facility',
+      name: 'Service',
+      entries: [
+        { label: 'Police', key: 'police' },
+        { label: 'Gendarmerie', key: 'gendarmerie' },
+        { label: 'Bureau de poste', key: 'bureau_de_poste' },
+      ],
+    },
+  ],
   rendering: {
     titleTemplates: {
       '5min': 'Part de la population à moins de 5min de l\'équipement ou service "{facility}"',

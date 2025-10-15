@@ -21,7 +21,7 @@ Central registry managing available map services:
 ### Core Functionality
 Abstract service class providing:
 - CSV data loading via D3
-- Entry configuration management (Map<string, InputEntry[]>)
+- Form control configuration management (FormControl[])
 - Selected form controls state tracking
 - Filtered data computation based on selections
 
@@ -32,10 +32,28 @@ The filteredData getter supports multiple data formats:
 - Eloignement/Evolution data: uses same filtering pattern as other services
 - Fallback: returns unfiltered data for unknown formats
 
-### Entry Management
-- formControls Map stores available options for each selection type
-- selectedFormControls Map tracks current user choices
-- Default selections initialize from first available option
+### Form Control Management
+- formControls array stores FormControl objects with key, name, and entries properties
+- selectedFormControls Map tracks current user choices by control key
+- Default selections initialize from first available entry in each FormControl
+- FormControl structure provides user-friendly display names and organized entry groups
+
+### FormControl Structure
+Each service defines formControls as an array of FormControl objects:
+
+**FormControl Interface:**
+- key: Unique identifier for the control (e.g., 'metric', 'facility')
+- name: User-friendly display name (e.g., 'Indicateur', 'Service', 'Temps d\'accès')
+- entries: Array of InputEntry objects with label and key properties
+
+**Standard Control Types:**
+- metric: Defines available data metrics for visualization
+- facility: Defines available facilities or services to filter by
+- Custom controls: Services can define specialized control types
+
+**Display Names by Service:**
+- Standard: 'Indicateur' for metrics, 'Service' for facilities
+- Eloignement: 'Temps d\'accès' for time-based metric controls
 
 ## Service Implementations
 
