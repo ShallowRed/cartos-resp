@@ -2,7 +2,7 @@ import type { ServiceConfig } from '@/services/service-config'
 
 export const dureeConfig: ServiceConfig = {
   id: 'duree',
-  title: 'Durées d\'accès aux équipements ou services publics',
+  title: 'Durées d\'accès',
   dataFile: '/data/duree.csv',
   formControls: [
     {

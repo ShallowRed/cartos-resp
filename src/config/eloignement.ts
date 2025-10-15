@@ -2,7 +2,7 @@ import type { ServiceConfig } from '@/services/service-config'
 
 export const eloignementConfig: ServiceConfig = {
   id: 'eloignement',
-  title: 'Éloignements des populations aux équipements ou services publics',
+  title: 'Éloignements des populations',
   dataFile: '/data/eloignement.csv',
   formControls: [
     {

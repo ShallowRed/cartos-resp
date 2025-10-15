@@ -12,7 +12,7 @@ const selected = defineModel<string>()
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col gap-1">
     <label
       class="label"
       :for="`#${id}`"

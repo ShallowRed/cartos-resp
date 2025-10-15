@@ -2,7 +2,7 @@ import type { ServiceConfig } from '@/services/service-config'
 
 export const couvertureConfig: ServiceConfig = {
   id: 'couverture',
-  title: 'Couverture des équipements et services',
+  title: 'Couverture',
   dataFile: '/data/couverture.csv',
   formControls: [
     {

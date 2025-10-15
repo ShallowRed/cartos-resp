@@ -1,54 +1,43 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { ref, watch } from 'vue'
+import MapControls from '@/components/MapControls.vue'
+import MapPickerTabs from '@/components/MapPickerTabs.vue'
 import MapRenderer from '@/components/MapRenderer.vue'
 import { useMapStore } from '@/stores/map'
 
 const mapStore = useMapStore()
-const { currentService, currentRenderer, geoData, isLoading, error } = storeToRefs(mapStore)
+const { currentService, currentRenderer, geoData } = storeToRefs(mapStore)
 
 const mapPlot = ref<any>(null)
 
-watch([currentService, currentRenderer, geoData], () => {
+watch([
+  currentService,
+  currentRenderer,
+  geoData,
+], () => {
   if (!currentService.value || !currentRenderer.value || !geoData.value) {
     return null
   }
   mapPlot.value = currentRenderer.value(geoData.value, currentService.value)
 }, { immediate: true, deep: true })
-
-// Watch for service changes (when indicators are updated)
-watch(() => currentService.value?.version?.value, () => {
-  if (!currentService.value || !currentRenderer.value || !geoData.value) {
-    return null
-  }
-  mapPlot.value = currentRenderer.value(geoData.value, currentService.value)
-}, { immediate: false })
 </script>
 
 <template>
-  <div class="flex-1 flex flex-col gap-4">
-    <!-- Loading State -->
-    <div
-      v-if="isLoading"
-      class="flex justify-center items-center py-8"
-    >
-      <span class="loading loading-spinner loading-lg" />
-    </div>
-
-    <!-- Error State -->
-    <div
-      v-else-if="error"
-      class="alert alert-error"
-    >
-      <span>{{ error }}</span>
-    </div>
-
+  <div class="flex-1 flex flex-col  bg-base-100 shadow-md border rounded-3xl border-base-300 p-6 gap-6">
+    <MapPickerTabs />
     <!-- Map Renderer -->
-    <template v-else-if="currentService">
+    <div
+      v-if="currentService"
+      class="flex-1 flex flex-col-reverse md:flex-row gap-0"
+    >
       <MapRenderer
         v-if="mapPlot"
+        class="flex-1 flex justify-center items-center min-h-[300px]"
         :map-plot="mapPlot"
       />
-    </template>
+      <div class="divider md:divider-horizontal" />
+      <MapControls class="md:w-1/4" />
+    </div>
   </div>
 </template>
