@@ -27,8 +27,9 @@ Abstract service class providing:
 
 ### Data Filtering Logic
 The filteredData getter supports multiple data formats:
-- Couverture data: filters by "Libelle" column
-- Duree data: filters by "Source" column
+- Couverture data: filters by "Libelle" column matching facility selection
+- Duree data: filters by "Source" column matching facility selection  
+- Eloignement/Evolution data: uses same filtering pattern as other services
 - Fallback: returns unfiltered data for unknown formats
 
 ### Entry Management
@@ -40,15 +41,31 @@ The filteredData getter supports multiple data formats:
 
 ### Couverture Service
 **Data Source:** `/data/couverture.csv`
+**Title:** "Couverture des équipements et services"
 **Metrics:** Population coverage percentage, commune equipment percentage
 **Facilities:** 33 facility types (airports, postal services, healthcare, education)
 **Renderer:** renderCouvertureMap with blue/purple color schemes
 
 ### Duree Service  
 **Data Source:** `/data/duree.csv`
+**Title:** "Durées d'accès aux équipements ou services publics"
 **Metrics:** Median duration, average duration (in minutes)
 **Facilities:** 30 facility types matching couverture categories
 **Renderer:** renderDureeMap with red/orange color schemes
+
+### Eloignement Service
+**Data Source:** `/data/eloignement.csv`
+**Title:** "Éloignements des populations aux équipements ou services publics"
+**Metrics:** Time thresholds (5, 10, 15, 20, 30, 45, 60 minutes)
+**Facilities:** 30 facility types plus "panier (ensemble)" composite metric
+**Renderer:** renderEloignementMap with distance-based color schemes
+
+### Evolution Service
+**Data Source:** `/data/evolution.csv`
+**Title:** "Évolution du maillage des équipements ou services publics entre 2019 et 2024"
+**Metrics:** Evolution percentage, evolution count (2019-2024 change)
+**Facilities:** 10 facility types focusing on key public services
+**Renderer:** renderEvolutionMap with diverging color schemes for change visualization
 
 ## Renderer Architecture
 
@@ -69,13 +86,21 @@ Both services use renderChoropleth with service-specific configurations:
 
 ### Visualization Differences
 **Couverture Maps:**
-- Percentage-based color scales
-- Blue scheme for population coverage
-- Purple scheme for commune equipment
-- Dual-metric tooltips
+- Percentage-based color scales with quantize type
+- Blue scheme for population coverage, purple for commune equipment
+- Dual-metric tooltips showing both coverage types
 
 **Duree Maps:**
-- Time-based color scales  
-- Orange scheme for median duration
-- Red scheme for average duration
-- Single-metric tooltips with time formatting
+- Time-based color scales for duration visualization
+- Orange scheme for median duration, red for average duration
+- Tooltips with time formatting and duration context
+
+**Eloignement Maps:**
+- Distance threshold visualization with appropriate color schemes
+- Time-based metrics showing population accessibility
+- Facility-specific color palettes
+
+**Evolution Maps:**
+- Diverging color schemes for change visualization
+- Percentage vs count change options
+- Historical comparison tooltips (2019-2024)

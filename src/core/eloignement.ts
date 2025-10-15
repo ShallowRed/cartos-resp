@@ -1,49 +1,21 @@
-export const title = 'Éloignements des populations aux équipements ou services publics'
-
-export const dataFile = 'merged-eloignement.csv'
-
-export function _chosenEloignementFacility(eloignementFacilities, Inputs) {
-  const entries = eloignementFacilities
-  const values = entries.map(d => d.key)
-  const getLabel = value => entries.find(d => d.key === value)?.label
-  return Inputs.select(values, { label: 'Équipement ou service', value: values[0], format: getLabel })
-}
-
-export function _chosenEloignementMetric(eloignementData, Inputs) {
-  const options = Object.keys(eloignementData[0]).filter(key => key.endsWith('min'))
-  return Inputs.select(options, { label: 'Durée d\'éloignement', value: options[1] })
-}
-
-export function _eloignementMap(eloignementData, chosenEloignementFacility, eloignementFacilities, chosenEloignementMetric, renderChoropleth, layerRegistry) {
-  const data = eloignementData.filter(d => d.Source === chosenEloignementFacility)
-
-  const chosenFacilityLabel = eloignementFacilities.find(d => d.key === chosenEloignementFacility)?.label
-
-  const title = `Part de la population à moins de ${chosenEloignementMetric} de l'équipement ou service « ${chosenFacilityLabel} »`
-
-  return renderChoropleth({
-    plotTitle: title,
-    tabularData: data, // colonnes: dep, LIBGEO, 5min..60min
-    featureCollection: layerRegistry.departements.featureCollection,
-    featureKey: f => f.properties.INSEE_DEP,
-    rowKey: r => r.dep,
-    valueAccessor: r => r[chosenEloignementMetric] != null ? (+String(r[chosenEloignementMetric]).replace(',', '.')) / 100 : null,
-    colorScale: {
-      legend: true,
-      type: 'quantize',
-      scheme: 'Greys',
-      percent: true,
-      label: `% Population < ${chosenEloignementMetric}`,
-    },
-    backgroundGeometry: layerRegistry.departements.backgroundGeometry,
-    overlayMeshes: layerRegistry.departements.overlayMeshes,
-    outlineGeometry: layerRegistry.departements.outlineGeometry,
-  })
-}
-
-export function _eloignementFacilities() {
-  return (
-    [
+import MapService from '@/core/map-service'
+import { renderChoropleth } from '@/core/render-choropleth'
+// label: 'Équipement ou service'
+// label: 'Durée d\'éloignement'
+export const eloignementService = new MapService({
+  title: 'Éloignements des populations aux équipements ou services publics',
+  dataFile: '/data/eloignement.csv',
+  entries: {
+    metric: [
+      { label: '5 minutes', key: '5min' },
+      { label: '10 minutes', key: '10min' },
+      { label: '15 minutes', key: '15min' },
+      { label: '20 minutes', key: '20min' },
+      { label: '30 minutes', key: '30min' },
+      { label: '45 minutes', key: '45min' },
+      { label: '60 minutes', key: '60min' },
+    ],
+    facility: [
       { label: 'Police', key: 'police' },
       { label: 'Gendarmerie', key: 'gendarmerie' },
       { label: 'Réseau de proximité Pôle emploi', key: 'reseau_de_proximite_pole_emploi' },
@@ -74,6 +46,33 @@ export function _eloignementFacilities() {
       { label: 'Arts du spectacle', key: 'arts_du_spectacle' },
       { label: 'Déchèterie', key: 'decheterie' },
       { label: 'Panier (ensemble)', key: 'panier_ensemble' },
-    ]
-  )
+    ],
+  },
+})
+
+export function renderEloignementMap(geoData: any, service: MapService) {
+  const tabularData = service.filteredData
+
+  const chosenFacilityLabel = service.getSelectedEntryLabel('facility') || '-'
+  const chosenEloignementMetric = service.getSelectedEntry('facility') || '-'
+  const title = `Part de la population à moins de ${chosenEloignementMetric} de l'équipement ou service « ${chosenFacilityLabel} »`
+
+  return renderChoropleth({
+    plotTitle: title,
+    tabularData, // colonnes: dep, LIBGEO, 5min..60min
+    featureCollection: geoData.featureCollection,
+    featureKey: f => f.properties.INSEE_DEP,
+    rowKey: r => r.dep,
+    valueAccessor: r => r[chosenEloignementMetric] != null ? (+String(r[chosenEloignementMetric]).replace(',', '.')) / 100 : null,
+    colorScale: {
+      legend: true,
+      type: 'quantize',
+      scheme: 'Greys',
+      percent: true,
+      label: `% Population < ${chosenEloignementMetric}`,
+    },
+    backgroundGeometry: geoData.backgroundGeometry,
+    overlayMeshes: geoData.overlayMeshes,
+    outlineGeometry: geoData.outlineGeometry,
+  })
 }

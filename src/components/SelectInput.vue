@@ -4,23 +4,25 @@ defineProps<{
   entries: { label: string, key: string }[]
 }>()
 
-const selected = defineModel<string>('selected')
+const selected = defineModel<string>()
 </script>
 
 <template>
-  <legend class="fieldset-legend">
-    {{ label }}
-  </legend>
-  <select
-    v-model="selected"
-    class="select select-bordered"
-  >
-    <option
-      v-for="entry in entries"
-      :key="entry.key"
-      :value="entry.key"
+  <div>
+    <legend class="fieldset-legend">
+      {{ label }}
+    </legend>
+    <select
+      v-model="selected"
+      class="select select-bordered"
     >
-      {{ entry.label }}
-    </option>
-  </select>
+      <option
+        v-for="entry in entries"
+        :key="entry.key"
+        :value="entry.key"
+      >
+        {{ entry.label }}
+      </option>
+    </select>
+  </div>
 </template>

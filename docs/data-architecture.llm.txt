@@ -19,7 +19,7 @@
 **File:** `/data/couverture.csv`
 **Structure:**
 - DEP: Department code (2-digit, zero-padded)
-- Libelle: Facility type identifier
+- Libelle: Facility type identifier for filtering
 - pct_pop: Population coverage percentage (0-1 scale)
 - pct_communes: Commune equipment percentage (0-1 scale)
 
@@ -29,25 +29,47 @@
 **File:** `/data/duree.csv`
 **Structure:**
 - dep: Department code
-- Source: Facility type identifier  
+- Source: Facility type identifier for filtering
 - moyenne: Average access duration (minutes)
 - mediane: Median access duration (minutes)
 - Libelle_TYPEQU: Human-readable facility label
 
 **Facility Categories:** 30 types covering public services and amenities
 
+#### Eloignement Dataset
+**File:** `/data/eloignement.csv`
+**Structure:**
+- Department code and facility identification columns
+- Time threshold columns: 5min, 10min, 15min, 20min, 30min, 45min, 60min
+- Facility type identifiers matching other datasets
+
+**Facility Categories:** 30 facility types plus composite "panier (ensemble)" metric
+
+#### Evolution Dataset
+**File:** `/data/evolution.csv` (referenced as `/data/merged-evolution.csv` in code)
+**Structure:**
+- Department codes for geographic mapping
+- Evolution_pct: Percentage change between 2019-2024
+- Evolution_nbr: Absolute count change between 2019-2024
+- Facility type identifiers for filtering
+
+**Facility Categories:** 10 key public service types focusing on infrastructure changes
+
 ## Data Processing Pipeline
 
 ### Loading Strategy
-1. Geographic data loads once and caches in store
-2. Service data loads on-demand when service activates
-3. Data filtering occurs reactively based on user selections
+1. Geographic data loads once via loadDepartementsData() and caches in store
+2. Service data loads on-demand via d3.csv() when service activates  
+3. Four CSV datasets available: couverture, duree, eloignement, evolution
+4. Data filtering occurs reactively through MapService.filteredData getter
 
 ### Filtering Logic
-MapService.filteredData applies facility-based filtering:
-- Matches selected facility against appropriate column (Libelle/Source)
+MapService.filteredData applies facility-based filtering consistently:
+- Couverture: matches selected facility against "Libelle" column
+- Duree: matches selected facility against "Source" column
+- Eloignement/Evolution: use same filtering pattern with appropriate columns
 - Returns full dataset when no facility selected
-- Maintains reactive updates when selections change
+- Maintains reactive updates when selections change through store actions
 
 ### Data Normalization
 **Number Processing:**
@@ -75,7 +97,9 @@ MapService.filteredData applies facility-based filtering:
 - Geographic/tabular mismatches show empty regions
 
 ### Performance Considerations
-- Geographic data caches after first load
-- CSV parsing uses D3's optimized parser
-- Filtered data computes on-demand via getters
-- Map rendering debounces through Vue's reactivity system
+- Geographic TopoJSON data loads once and caches in store
+- CSV parsing uses D3's optimized d3.csv() parser for all four datasets
+- Filtered data computes on-demand via MapService getters
+- Observable Plot rendering occurs reactively through Vue watch
+- Service switching triggers data loading only when needed
+- Default selections stored per-service to maintain user context

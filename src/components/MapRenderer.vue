@@ -20,5 +20,6 @@ watch([mapPlot, mapContainer], ([plot, container]) => {
 <template>
   <div
     ref="mapContainer"
+    class="flex-1 flex justify-center items-center border border-base-300 rounded-lg bg-neutral-100"
   />
 </template>

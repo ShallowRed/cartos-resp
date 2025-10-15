@@ -1,19 +1,44 @@
 import type { MapServiceEntry } from '@/core/map-registry'
-
 import { defineStore } from 'pinia'
-import { computed, onUnmounted, reactive, ref } from 'vue'
-
+import { computed, ref } from 'vue'
+import { couvertureService, renderCouvertureMap } from '@/core/couverture'
+import { dureeService, renderDureeMap } from '@/core/duree'
+import { eloignementService, renderEloignementMap } from '@/core/eloignement'
+import { evolutionService, renderEvolutionMap } from '@/core/evolution'
 import { loadDepartementsData } from '@/core/geodata-loader'
-import { mapRegistry } from '@/core/map-registry'
+import { MapRegistry } from '@/core/map-registry'
 
 export const useMapStore = defineStore('map', () => {
+  const mapRegistry = new MapRegistry()
+  mapRegistry.register('couverture', couvertureService, renderCouvertureMap)
+  mapRegistry.register('duree', dureeService, renderDureeMap)
+  mapRegistry.register('eloignement', eloignementService, renderEloignementMap)
+  mapRegistry.register('evolution', evolutionService, renderEvolutionMap)
+
   // State
   const currentMapId = ref<string | null>(null)
   const geoData = ref<any>(null)
-  const selectedEntries = reactive<Record<string, string>>({})
+  const selectedEntries = ref<Record<string, Record<string, string>>>({
+    couverture: {
+      facility: 'ambulance',
+      metric: 'pct_communes',
+    },
+    duree: {
+      facility: 'gendarmerie',
+      metric: 'mediane',
+    },
+    eloignement: {
+      facility: 'bureau_de_poste',
+      metric: '15min',
+    },
+    evolution: {
+      facility: 'centre_de_sante',
+      metric: 'Evolution_pct',
+    },
+  })
+
   const isLoading = ref(false)
   const error = ref<string | null>(null)
-  const registryVersion = ref(0) // Reactive trigger for registry changes
 
   // Getters
   const currentMapEntry = computed<MapServiceEntry | null>(() => {
@@ -34,42 +59,20 @@ export const useMapStore = defineStore('map', () => {
     return Array.from(currentService.value.entries.entries())
   })
 
-  const mapPlot = computed(() => {
-    if (!geoData.value || !currentService.value || !currentRenderer.value) {
-      return null
-    }
-    // Include selectedEntries in the reactive dependency to trigger re-computation
-    // when entries change
-    const _entries = selectedEntries
-    // Trigger access to make the computed reactive to selectedEntries changes
-    Object.keys(_entries)
-    return currentRenderer.value(geoData.value, currentService.value)
-  })
-
-  // Subscribe to registry changes to make availableMaps reactive
-  const unsubscribe = mapRegistry.subscribe(() => {
-    registryVersion.value++
-  })
-
-  // Clean up subscription when store is destroyed
-  onUnmounted(() => {
-    unsubscribe()
-  })
-
   const availableMaps = computed(() => {
-    // Access registryVersion to make this reactive to registry changes
-    const _version = registryVersion.value
-    const allMaps = mapRegistry.getAll()
-    return allMaps.map(entry => ({
-      id: entry.id,
-      title: entry.service.title,
-    }))
+    return mapRegistry
+      .getAll()
+      .map(entry => ({
+        id: entry.id,
+        title: entry.service.title,
+      }))
   })
 
   // Actions
   const setCurrentMap = async (mapId: string) => {
-    if (currentMapId.value === mapId)
+    if (currentMapId.value === mapId) {
       return
+    }
 
     isLoading.value = true
     error.value = null
@@ -90,12 +93,6 @@ export const useMapStore = defineStore('map', () => {
 
       // Update current map
       currentMapId.value = mapId
-
-      // Initialize selected entries from service defaults
-      Object.keys(selectedEntries).forEach(key => delete selectedEntries[key])
-      for (const [entryKey] of mapEntry.service.entries) {
-        selectedEntries[entryKey] = mapEntry.service.getSelectedEntry(entryKey) || ''
-      }
     }
     catch (err) {
       error.value = err instanceof Error ? err.message : 'Unknown error occurred'
@@ -106,11 +103,27 @@ export const useMapStore = defineStore('map', () => {
     }
   }
 
-  const setSelectedEntry = (entryKey: string, selectedValue: string) => {
-    if (currentService.value) {
-      selectedEntries[entryKey] = selectedValue
-      currentService.value.setSelectedEntry(entryKey, selectedValue)
+  const setSelectedEntry = (entryKey: string, selectedKey: string) => {
+    if (!currentMapId.value || !currentService.value) {
+      return
     }
+    const entryOptions = currentService.value.entries.get(entryKey)
+    if (!entryOptions || !entryOptions.find(e => e.key === selectedKey)) {
+      console.warn(`Entry key "${entryKey}" or selected key "${selectedKey}" not found in service "${currentMapId.value}"`)
+      return
+    }
+    // Update the service's selected entry
+    currentService.value.setSelectedEntry(entryKey, selectedKey)
+    console.log(currentService.value)
+    selectedEntries.value[currentMapId.value] ??= {} as Record<string, string>
+    (selectedEntries.value[currentMapId.value] as Record<string, string>)[entryKey] = selectedKey
+  }
+
+  const getSelectedEntry = (entryKey: string) => {
+    if (!currentMapId.value)
+      return ''
+    const mapEntries = selectedEntries.value[currentMapId.value]
+    return mapEntries?.[entryKey] || ''
   }
 
   const initialize = async () => {
@@ -121,6 +134,7 @@ export const useMapStore = defineStore('map', () => {
   }
 
   return {
+    geoData,
     // State
     currentMapId,
     selectedEntries,
@@ -129,13 +143,14 @@ export const useMapStore = defineStore('map', () => {
 
     // Getters
     currentService,
+    currentRenderer,
     entriesMap,
-    mapPlot,
     availableMaps,
 
     // Actions
     setCurrentMap,
     setSelectedEntry,
+    getSelectedEntry,
     initialize,
   }
 })

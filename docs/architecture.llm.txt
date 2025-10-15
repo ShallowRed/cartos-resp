@@ -12,13 +12,14 @@
 ## System Architecture
 
 ### Core Technology Stack
-- **Frontend Framework**: Vue.js 3 with Composition API
-- **Build Tool**: Vite 7.1.9
+- **Frontend Framework**: Vue.js 3 with Composition API and script setup syntax
+- **Build Tool**: Vite with TypeScript support
 - **Language**: TypeScript with strict mode
-- **Styling**: Tailwind CSS with DaisyUI 5 components
-- **State Management**: Pinia stores
-- **Data Visualization**: D3.js and Observable Plot for map rendering
-- **Geographic Data**: Natural Earth data with TopoJSON format
+- **Styling**: Tailwind CSS 4.1.14 with DaisyUI 5.1.26 components
+- **State Management**: Pinia 3.0.3 stores with Composition API
+- **Data Visualization**: D3.js 7.9.0 and Observable Plot 0.6.17 for choropleth rendering
+- **Geographic Data**: Natural Earth TopoJSON with topojson-client processing
+- **Additional Libraries**: d3-composite-projections, remixicon for icons
 
 ### Application Structure
 
@@ -29,8 +30,8 @@ The application uses a registry-based architecture for handling multiple map typ
 
 **Core Components:**
 - Map Registry: Centralizes service registration and discovery
-- MapService Base Class: Handles data loading and filtering logic
-- Service Implementations: couverture and duree services with specific renderers
+- MapService Base Class: Handles CSV data loading, entry management, and filtering logic
+- Service Implementations: Four complete services (couverture, duree, eloignement, evolution) with dedicated renderers
 
 #### State Management Architecture
 
@@ -47,29 +48,29 @@ The application uses a registry-based architecture for handling multiple map typ
 > **Detailed Coverage**: See `services.llm.txt` for MapService class design, service implementations, and renderer architecture.
 
 **Service Pattern:**
-- Abstract MapService base class with common functionality
-- Service-specific implementations (couverture, duree)
-- Registry-based service discovery and management
+- MapService base class with CSV loading, entry management, and filtering
+- Four service implementations (couverture, duree, eloignement, evolution)
+- Registry-based service discovery and management with renderer functions
 
 #### Component Architecture
 
 > **Detailed Coverage**: See `vue-architecture.llm.txt` for component hierarchy, props/events, and UI patterns.
 
 **Component Structure:**
-- App.vue: Root container with service initialization
-- MapSelector: Map type switching interface
-- SelectInput: Generic selection controls  
-- MapRenderer: Observable Plot visualization container
+- App.vue: Root container with store initialization and reactive map rendering
+- MapSelector: DaisyUI-styled dropdown for map type switching
+- SelectInput: Generic v-model select component for facility/metric selection  
+- MapRenderer: DOM container for Observable Plot choropleth visualizations
 
 #### Data Processing Pipeline
 
 > **Detailed Coverage**: See `data-architecture.llm.txt` for data sources, processing pipeline, normalization, and reactive data flow.
 
 **Data Flow:**
-- Geographic data loading via Natural Earth TopoJSON
-- CSV data processing with D3 parsing
-- Reactive filtering based on user selections
-- Observable Plot rendering with customizable visualizations
+- Geographic data loading via TopoJSON with cached departmental boundaries
+- CSV data processing with D3 parsing for four datasets
+- Reactive filtering based on facility and metric selections
+- Observable Plot choropleth rendering with service-specific color schemes
 
 ### Reactive Architecture
 

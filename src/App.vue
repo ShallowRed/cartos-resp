@@ -1,83 +1,82 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 
+import { onMounted, ref, watch } from 'vue'
 import MapRenderer from '@/components/MapRenderer.vue'
 import MapSelector from '@/components/MapSelector.vue'
 import SelectInput from '@/components/SelectInput.vue'
-import { initializeMapServices } from '@/core/map-services'
 import { useMapStore } from '@/stores/map'
 
 const mapStore = useMapStore()
+const { currentService, currentRenderer, geoData, selectedEntries } = storeToRefs(mapStore)
 
 onMounted(async () => {
-  // Initialize available map services
-  initializeMapServices()
-
-  // Initialize the store with the first available map
   await mapStore.initialize()
 })
 
-// Handle map selection changes
-function handleMapChange(mapId: string) {
-  mapStore.setCurrentMap(mapId)
-}
-
-// Handle entry selection changes
-function handleEntryChange(entryKey: string, selectedValue: string | undefined) {
-  if (selectedValue !== undefined) {
-    mapStore.setSelectedEntry(entryKey, selectedValue)
+const mapPlot = ref(null)
+watch([currentService, currentRenderer, geoData, selectedEntries], () => {
+  if (!currentService.value || !currentRenderer.value || !geoData.value) {
+    return null
   }
-}
+  mapPlot.value = currentRenderer.value(geoData.value, currentService.value)
+}, { immediate: true, deep: true })
 </script>
 
 <template>
   <div class="bg-base-200">
     <main class="min-h-[100vh] container mx-auto py-8 flex flex-col">
-      <!-- Map Selector -->
-      <MapSelector
-        :maps="mapStore.availableMaps"
-        :selected="mapStore.currentMapId || undefined"
-        label="Sélectionner une carte"
-        @update:selected="handleMapChange"
-      />
-
-      <!-- Loading State -->
-      <div
-        v-if="mapStore.isLoading"
-        class="flex justify-center items-center py-8"
-      >
-        <span class="loading loading-spinner loading-lg" />
-      </div>
-
-      <!-- Error State -->
-      <div
-        v-else-if="mapStore.error"
-        class="alert alert-error"
-      >
-        <span>{{ mapStore.error }}</span>
-      </div>
-
-      <!-- Map Controls -->
-      <template v-else-if="mapStore.currentService">
-        <fieldset
-          v-for="[key, entries] in mapStore.entriesMap"
-          :key="key"
-          class="fieldset"
-        >
-          <SelectInput
-            v-model:selected="mapStore.selectedEntries[key]"
-            :label="key"
-            :entries="entries"
-            @update:selected="(value: string | undefined) => handleEntryChange(key, value)"
+      <div class="flex-1 flex flex-col md:flex-row gap-8">
+        <div class="md:w-1/4 flex flex-col gap-4">
+          <!-- Map Selector -->
+          <MapSelector
+            :maps="mapStore.availableMaps"
+            :selected="mapStore.currentMapId || undefined"
+            label="Sélectionner une carte"
+            @update:selected="mapStore.setCurrentMap"
           />
-        </fieldset>
+          <!-- Dynamic Controls -->
+          <template v-if="mapStore.currentService">
+            <fieldset
+              v-for="[key, entries] in mapStore.entriesMap"
+              :key="key"
+              class="fieldset"
+            >
+              <SelectInput
+                :label="key"
+                :entries="entries"
+                :model-value="mapStore.getSelectedEntry(key)"
+                @update:model-value="(value: any) => value && mapStore.setSelectedEntry(key, value)"
+              />
+            </fieldset>
+          </template>
+        </div>
+        <div class="flex-1 flex flex-col gap-4">
+          <!-- Loading State -->
+          <div
+            v-if="mapStore.isLoading"
+            class="flex justify-center items-center py-8"
+          >
+            <span class="loading loading-spinner loading-lg" />
+          </div>
 
-        <!-- Map Renderer -->
-        <MapRenderer
-          v-if="mapStore.mapPlot"
-          :map-plot="mapStore.mapPlot"
-        />
-      </template>
+          <!-- Error State -->
+          <div
+            v-else-if="mapStore.error"
+            class="alert alert-error"
+          >
+            <span>{{ mapStore.error }}</span>
+          </div>
+
+          <!-- Map Renderer -->
+          <template v-else-if="mapStore.currentService">
+            <MapRenderer
+              v-if="mapPlot"
+              :map-plot="mapPlot"
+            />
+          </template>
+        </div>
+      </div>
     </main>
   </div>
 </template>

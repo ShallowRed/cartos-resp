@@ -4,66 +4,81 @@
 
 ### Root Level
 - **App.vue**: Main application container
-  - Initializes map services on mount
-  - Manages global loading and error states
-  - Coordinates MapSelector, controls, and MapRenderer
+  - Initializes MapRegistry with four services (couverture, duree, eloignement, evolution)
+  - Manages global loading and error states via Pinia store
+  - Implements reactive watch on service/renderer/data changes
+  - Coordinates MapSelector, dynamic controls, and MapRenderer
 
 ### UI Components
 
 **MapSelector.vue**
-- Provides dropdown interface for map type selection
-- Uses DaisyUI select styling
-- Emits update:selected events for map switching
+- Dropdown interface for switching between four map types
+- Uses DaisyUI select styling with fieldset/legend structure
+- TypeScript interfaces for MapOption props and update:selected emits
+- Maps service titles from MapRegistry to user-friendly names
 
 **SelectInput.vue** 
-- Generic select component for entry selections (facility, metric)
-- Supports v-model:selected binding
-- Dynamically renders options from entries array
-- Used for both facility and metric selection
+- Generic select component for facility and metric selections
+- TypeScript props interface with entries array and modelValue
+- DaisyUI form-control and select styling
+- Emits update:modelValue for Vue 3 v-model compatibility
 
 **MapRenderer.vue**
-- Renders Observable Plot visualizations
-- Receives mapPlot prop containing plot configuration
-- Handles plot mounting and updates
+- DOM container for Observable Plot choropleth visualizations
+- Receives mapPlot prop containing pre-rendered plot element
+- Uses Vue refs and watch to handle plot mounting and updates
+- Clears container before appending new plot DOM elements
 
 ## State Management Pattern
 
 ### Pinia Store Integration
-The application uses centralized state management through the map store:
+The application uses centralized state management through the useMapStore:
+
+**Store Structure:**
+- MapRegistry instance with four registered services
+- Reactive refs for currentMapId, geoData, selectedEntries, loading/error states
+- Computed properties for currentService, currentRenderer, entriesMap, availableMaps
+- Actions for setCurrentMap, setSelectedEntry, getSelectedEntry, initialize
 
 **Reactive Dependencies:**
-- Components bind directly to store computed properties
-- selectedEntries reactive object triggers automatic re-rendering
-- Store handles async operations (data loading, service switching)
+- Components bind to store via storeToRefs for reactive updates
+- selectedEntries object maintains per-service default selections
+- Store handles async operations (geodata loading, service data loading)
+- Error states propagate to UI for user feedback
 
 **Event Flow:**
-1. User interaction (select change) → Component handler
-2. Component handler → Store action (setSelectedEntry/setCurrentMap)
-3. Store updates → Computed properties recalculate
-4. Computed changes → Component re-renders
+1. User interaction (select change) → Component emit handler
+2. Component handler → Store action (setSelectedEntry/setCurrentMap)  
+3. Store action → Service state update and validation
+4. Computed properties recalculate → Automatic component re-renders
+5. App.vue watch triggers new map plot generation
 
 ## Composition API Usage
 
 ### Script Setup Pattern
 All components use `<script setup>` syntax with:
-- TypeScript interfaces for props and emits
-- Direct store access via useMapStore()
-- Reactive event handlers
+- TypeScript interfaces for Props and Emits types
+- Direct store access via useMapStore() with storeToRefs for reactivity
+- Reactive watch functions and computed properties
+- Template refs for DOM element access
 
 ### Lifecycle Management
-- onMounted hook in App.vue initializes services
-- Store handles async loading states
-- Error boundaries through store error state
+- onMounted hook in App.vue calls store.initialize()
+- Store initialize method loads first available service
+- Async loading states with isLoading reactive ref
+- Error boundaries through store error state with UI alerts
+- Geodata loads once and caches, service data loads per-service
 
 ## Styling Architecture
 
 ### DaisyUI Integration
-- Components use semantic DaisyUI classes
-- Fieldset and legend elements for form structure
-- Loading spinner and alert components for states
-- Select and form-control classes for inputs
+- Semantic component classes: select-bordered, form-control, loading-spinner
+- Alert system with alert-error for error states
+- Fieldset and legend elements for accessible form structure
+- Background theming with bg-base-200 for visual hierarchy
 
-### Responsive Design
-- Container mx-auto for centered layout
-- Flex layout for main content structure
-- Py-8 spacing for vertical rhythm
+### Responsive Design  
+- Container mx-auto with py-8 for centered, padded layout
+- Flex flex-col layout for vertical main content flow
+- Min-h-[100vh] for full viewport height coverage
+- Dynamic fieldset rendering based on service entry configuration
