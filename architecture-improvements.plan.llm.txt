@@ -1,0 +1,127 @@
+# Architecture Improvements - Implementation Plan
+
+## Objective
+Implement simple yet effective architecture improvements to reduce code duplication, improve type safety, and enhance maintainability while preserving current functionality and simplicity.
+
+## Affected Domains
+- [ ] Services (docs/services.llm.txt) - Service configuration pattern and renderer simplification
+- [ ] Vue Architecture (docs/vue-architecture.llm.txt) - Component composition and store improvements
+- [ ] Data Architecture (docs/data-architecture.llm.txt) - Type safety and data loading optimization
+- [ ] Core Architecture (docs/architecture.llm.txt) - Overall system patterns and abstractions
+
+## Context
+- Architecture: docs/architecture.llm.txt
+- Current: 4 services with duplicated renderer patterns, basic TypeScript usage
+- Goal: Reduce duplication while maintaining simplicity and current UX
+
+## Changes
+
+### Phase 1: Type Safety Foundation
+- [ ] File: src/types/service.types.ts
+  - Action: Create comprehensive TypeScript interfaces for services and renderers
+  - Why: Replace extensive 'any' usage with proper types
+  - Impact: Better developer experience, fewer runtime errors
+
+- [ ] File: src/core/map-service.ts
+  - Action: Add generic type parameters and proper interfaces
+  - Why: Type-safe service data and entry management
+  - Impact: Compile-time validation of service configurations
+
+### Phase 2: Service Configuration System
+- [ ] File: src/core/service-config.ts
+  - Action: Create ServiceConfig interface and configuration objects
+  - Why: Replace hardcoded renderer logic with declarative configuration
+  - Impact: Easier to add new services, less code duplication
+
+- [ ] File: src/core/generic-renderer.ts
+  - Action: Implement configurable renderer factory
+  - Why: Eliminate four similar renderer functions
+  - Impact: Single renderer handles all service types via configuration
+
+- [ ] File: src/core/couverture.ts
+  - Action: Replace renderCouvertureMap with configuration object
+  - Why: Reduce boilerplate and improve maintainability
+  - Impact: ~50 lines of renderer code becomes ~10 lines of config
+
+- [ ] File: src/core/duree.ts
+  - Action: Replace renderDureeMap with configuration object
+  - Why: Consistent pattern across all services
+  - Impact: Same as couverture - significant code reduction
+
+- [ ] File: src/core/eloignement.ts
+  - Action: Replace renderEloignementMap with configuration object
+  - Why: Maintain consistency and reduce duplication
+  - Impact: Simplified service definition
+
+- [ ] File: src/core/evolution.ts
+  - Action: Replace renderEvolutionMap with configuration object
+  - Why: Complete the pattern across all services
+  - Impact: All services use same configuration approach
+
+### Phase 3: Store and Component Improvements
+- [ ] File: src/stores/map.ts
+  - Action: Simplify store by removing selectedEntries management
+  - Why: Let services handle their own state, reduce store complexity
+  - Impact: Cleaner separation of concerns, simpler state management
+
+- [ ] File: src/components/MapControls.vue
+  - Action: Extract control logic from App.vue into dedicated component
+  - Why: Better component composition and separation of concerns
+  - Impact: App.vue becomes simpler, controls are reusable
+
+- [ ] File: src/components/MapVisualization.vue
+  - Action: Extract visualization logic from App.vue
+  - Why: Single responsibility principle
+  - Impact: Better component organization
+
+- [ ] File: src/App.vue
+  - Action: Simplify to use new MapControls and MapVisualization components
+  - Why: Remove direct service management from root component
+  - Impact: Cleaner, more maintainable root component
+
+### Phase 4: Error Handling and Data Loading
+- [ ] File: src/core/errors.ts
+  - Action: Create structured error classes and handling utilities
+  - Why: Better error reporting and debugging
+  - Impact: More informative error messages for users and developers
+
+- [ ] File: src/core/data-cache.ts
+  - Action: Implement data caching system for CSV files
+  - Why: Avoid redundant data loading between services
+  - Impact: Better performance when switching between services
+
+## Documentation Updates
+- [ ] docs/services.llm.txt - Update to describe configuration-based service pattern
+- [ ] docs/vue-architecture.llm.txt - Document new component composition pattern
+- [ ] docs/data-architecture.llm.txt - Add type safety and caching information
+- [ ] docs/architecture.llm.txt - Update overall system description with new patterns
+
+## Implementation Priority
+1. **Phase 1 (Type Safety)** - High impact, low risk, enables other improvements
+2. **Phase 2 (Service Config)** - High impact, medium risk, core architectural change
+3. **Phase 3 (Components)** - Medium impact, low risk, improves maintainability
+4. **Phase 4 (Infrastructure)** - Low impact, low risk, nice-to-have improvements
+
+## Risk Mitigation
+- Implement incrementally, one phase at a time
+- Maintain backward compatibility during transition
+- Keep existing renderer functions until new system is tested
+- Preserve all current functionality and UX
+
+## Success Metrics
+- Reduce total lines of code in renderer functions by ~60%
+- Eliminate all 'any' types in core service code
+- Improve component organization (single responsibility)
+- Maintain identical user experience
+
+## Verification
+- [ ] All existing maps render identically
+- [ ] TypeScript compilation without errors
+- [ ] All service switching and filtering works
+- [ ] Error states display correctly
+- [ ] Performance is maintained or improved
+- [ ] Code is more maintainable (subjective but measurable through metrics)
+
+## Status
+Status: PLANNED
+Last Updated: 2025-10-15
