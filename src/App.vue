@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-
 import { onMounted, ref, watch } from 'vue'
 import MapRenderer from '@/components/MapRenderer.vue'
-import MapSelector from '@/components/MapSelector.vue'
 import SelectInput from '@/components/SelectInput.vue'
 import { useMapStore } from '@/stores/map'
 
@@ -25,31 +23,81 @@ watch([currentService, currentRenderer, geoData, selectedEntries], () => {
 
 <template>
   <div class="bg-base-200">
-    <main class="min-h-[100vh] container mx-auto py-8 flex flex-col">
-      <div class="flex-1 flex flex-col md:flex-row gap-8">
-        <div class="md:w-1/4 flex flex-col gap-4">
+    <main class="min-h-[100vh] container mx-auto py-12 flex flex-col">
+      <div class="flex-1 flex flex-col md:flex-row gap-12">
+        <div class="md:w-1/4 flex flex-col gap-12">
+          <div class="card bg-base-100 border border-base-300 rounded-lg">
+            <div class="card-body">
+              <h1 class="text-2xl font-bold mb-2">
+                Cartos Resp
+              </h1>
+              <p class="text-sm">
+                Visualisation des indicateurs de l&apos;accessibilité des services publics en France métropolitaine.
+              </p>
+              <p class="text-xs mt-2">
+                Données issues de la <a
+                  class="link link-primary"
+                  href="https://www.cquest.org/cquest2024/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >CQuest 2024</a>.
+              </p>
+            </div>
+          </div>
           <!-- Map Selector -->
-          <MapSelector
+          <!-- <MapSelector
             :maps="mapStore.availableMaps"
             :selected="mapStore.currentMapId || undefined"
             label="Sélectionner une carte"
             @update:selected="mapStore.setCurrentMap"
-          />
-          <!-- Dynamic Controls -->
-          <template v-if="mapStore.currentService">
-            <fieldset
-              v-for="[key, entries] in mapStore.entriesMap"
-              :key="key"
-              class="fieldset"
-            >
-              <SelectInput
-                :label="key"
-                :entries="entries"
-                :model-value="mapStore.getSelectedEntry(key)"
-                @update:model-value="(value: any) => value && mapStore.setSelectedEntry(key, value)"
-              />
-            </fieldset>
-          </template>
+          /> -->
+          <div class="card bg-base-100 border border-base-300 rounded-lg">
+            <div class="card-body">
+              <div>
+                <label
+                  class="fieldset-legend text-sm"
+                  for="#map-service-select"
+                >
+                  Sélectionner une carte
+                </label>
+                <select
+                  id="map-service-select"
+                  class="select select-bordered cursor-pointer"
+                  :value="mapStore.currentMapId"
+                  @change="(e) => mapStore.setCurrentMap((e.target as HTMLSelectElement).value)"
+                >
+                  <option
+                    v-for="entry in mapStore.availableMaps"
+                    :key="entry.id"
+                    :value="entry.id"
+                  >
+                    {{ entry.title }}
+                  </option>
+                </select>
+              </div>
+              <!-- Dynamic Controls -->
+              <fieldset
+                v-if="mapStore.currentService"
+                class="fieldset bg-base-100 border-base-300 rounded-box w-xs border p-4"
+              >
+                <legend class="fieldset-legend text-sm">
+                  Indicateurs
+                </legend>
+                <div
+                  v-for="[key, entries] in mapStore.entriesMap"
+                  :key="key"
+                  class="fieldset"
+                >
+                  <SelectInput
+                    :label="key"
+                    :entries="entries"
+                    :model-value="mapStore.getSelectedEntry(key)"
+                    @update:model-value="(value: any) => value && mapStore.setSelectedEntry(key, value)"
+                  />
+                </div>
+              </fieldset>
+            </div>
+          </div>
         </div>
         <div class="flex-1 flex flex-col gap-4">
           <!-- Loading State -->

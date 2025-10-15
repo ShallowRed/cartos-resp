@@ -4,17 +4,23 @@ defineProps<{
   entries: { label: string, key: string }[]
 }>()
 
+const id = `select-input-${Math.random().toString(36).substring(2, 15)}`
+
 const selected = defineModel<string>()
 </script>
 
 <template>
   <div>
-    <legend class="fieldset-legend">
+    <label
+      class="label"
+      :for="`#${id}`"
+    >
       {{ label }}
-    </legend>
+    </label>
     <select
+      :id="id"
       v-model="selected"
-      class="select select-bordered"
+      class="select select-bordered cursor-pointer"
     >
       <option
         v-for="entry in entries"
