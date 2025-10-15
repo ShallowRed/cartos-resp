@@ -1,7 +1,7 @@
 import type { MapServiceEntry } from '@/core/map-registry'
 
 import { defineStore } from 'pinia'
-import { computed, reactive, ref } from 'vue'
+import { computed, onUnmounted, reactive, ref } from 'vue'
 
 import { loadDepartementsData } from '@/core/geodata-loader'
 import { mapRegistry } from '@/core/map-registry'
@@ -13,6 +13,7 @@ export const useMapStore = defineStore('map', () => {
   const selectedEntries = reactive<Record<string, string>>({})
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+  const registryVersion = ref(0) // Reactive trigger for registry changes
 
   // Getters
   const currentMapEntry = computed<MapServiceEntry | null>(() => {
@@ -45,8 +46,21 @@ export const useMapStore = defineStore('map', () => {
     return currentRenderer.value(geoData.value, currentService.value)
   })
 
+  // Subscribe to registry changes to make availableMaps reactive
+  const unsubscribe = mapRegistry.subscribe(() => {
+    registryVersion.value++
+  })
+
+  // Clean up subscription when store is destroyed
+  onUnmounted(() => {
+    unsubscribe()
+  })
+
   const availableMaps = computed(() => {
-    return mapRegistry.getAll().map(entry => ({
+    // Access registryVersion to make this reactive to registry changes
+    const _version = registryVersion.value
+    const allMaps = mapRegistry.getAll()
+    return allMaps.map(entry => ({
       id: entry.id,
       title: entry.service.title,
     }))
@@ -100,9 +114,9 @@ export const useMapStore = defineStore('map', () => {
   }
 
   const initialize = async () => {
-    const availableMaps = mapRegistry.getIds()
-    if (availableMaps.length > 0 && availableMaps[0]) {
-      await setCurrentMap(availableMaps[0])
+    const availableMapIds = mapRegistry.getIds()
+    if (availableMapIds.length > 0 && availableMapIds[0]) {
+      await setCurrentMap(availableMapIds[0])
     }
   }
 
