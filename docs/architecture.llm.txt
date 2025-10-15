@@ -1,1 +1,98 @@
 # Cartos RESP 2025 - Architecture Overview
+
+> **Entry Point**: Start here for system understanding. This document provides high-level overview and dispatches to detailed domain documentation.
+
+## Documentation Structure
+
+**Domain-Specific Documentation:**
+- `vue-architecture.llm.txt` - Vue.js components, state management, and UI patterns
+- `services.llm.txt` - Service registry, MapService architecture, and renderers  
+- `data-architecture.llm.txt` - Data sources, processing pipeline, and reactive flow
+
+## System Architecture
+
+### Core Technology Stack
+- **Frontend Framework**: Vue.js 3 with Composition API
+- **Build Tool**: Vite 7.1.9
+- **Language**: TypeScript with strict mode
+- **Styling**: Tailwind CSS with DaisyUI 5 components
+- **State Management**: Pinia stores
+- **Data Visualization**: D3.js and Observable Plot for map rendering
+- **Geographic Data**: Natural Earth data with TopoJSON format
+
+### Application Structure
+
+#### Generic Map System
+The application uses a registry-based architecture for handling multiple map types through a unified interface.
+
+> **Detailed Coverage**: See `services.llm.txt` for complete service architecture, registry patterns, and renderer implementations.
+
+**Core Components:**
+- Map Registry: Centralizes service registration and discovery
+- MapService Base Class: Handles data loading and filtering logic
+- Service Implementations: couverture and duree services with specific renderers
+
+#### State Management Architecture
+
+> **Detailed Coverage**: See `vue-architecture.llm.txt` for complete Vue.js patterns, component hierarchy, and Pinia store integration.
+
+**Central Store Pattern:**
+- Pinia-based map store manages global application state
+- Reactive selectedEntries trigger automatic map re-rendering
+- Async loading states with error handling
+- Computed properties provide derived data to components
+
+#### Map Service Architecture
+
+> **Detailed Coverage**: See `services.llm.txt` for MapService class design, service implementations, and renderer architecture.
+
+**Service Pattern:**
+- Abstract MapService base class with common functionality
+- Service-specific implementations (couverture, duree)
+- Registry-based service discovery and management
+
+#### Component Architecture
+
+> **Detailed Coverage**: See `vue-architecture.llm.txt` for component hierarchy, props/events, and UI patterns.
+
+**Component Structure:**
+- App.vue: Root container with service initialization
+- MapSelector: Map type switching interface
+- SelectInput: Generic selection controls  
+- MapRenderer: Observable Plot visualization container
+
+#### Data Processing Pipeline
+
+> **Detailed Coverage**: See `data-architecture.llm.txt` for data sources, processing pipeline, normalization, and reactive data flow.
+
+**Data Flow:**
+- Geographic data loading via Natural Earth TopoJSON
+- CSV data processing with D3 parsing
+- Reactive filtering based on user selections
+- Observable Plot rendering with customizable visualizations
+
+### Reactive Architecture
+
+> **Cross-References**: 
+> - `vue-architecture.llm.txt` - Vue reactivity patterns and store integration
+> - `data-architecture.llm.txt` - Reactive data flow and processing chain
+> - `services.llm.txt` - Service state management and filtering
+
+**Reactive Flow:**
+- Vue 3 reactivity system with Pinia stores
+- Automatic UI updates on user interactions
+- Computed properties trigger map re-rendering
+- Error states and loading feedback
+
+## Navigation Guide
+
+**For Implementation Tasks:**
+- Adding new components → `vue-architecture.llm.txt`
+- Adding new map services → `services.llm.txt`
+- Data format changes → `data-architecture.llm.txt`
+
+**For Understanding:**
+- System overview → This document
+- Component interactions → `vue-architecture.llm.txt`
+- Data pipeline → `data-architecture.llm.txt`
+- Service patterns → `services.llm.txt`

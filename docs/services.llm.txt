@@ -1,0 +1,81 @@
+# Services Architecture - Cartos RESP 2025
+
+## Service Registry Pattern
+
+### MapRegistry System
+Central registry managing available map services:
+
+**Registration Process:**
+- Services register with unique ID, MapService instance, and renderer function
+- Registry provides discovery methods (get, getAll, getIds)
+- Type-safe MapServiceEntry interface ensures consistency
+
+**Service Lifecycle:**
+1. Service registration during app initialization
+2. Service discovery through registry queries
+3. Service instantiation and data loading on demand
+4. Service state management through store
+
+## MapService Base Class
+
+### Core Functionality
+Abstract service class providing:
+- CSV data loading via D3
+- Entry configuration management (Map<string, InputEntry[]>)
+- Selected entries state tracking
+- Filtered data computation based on selections
+
+### Data Filtering Logic
+The filteredData getter supports multiple data formats:
+- Couverture data: filters by "Libelle" column
+- Duree data: filters by "Source" column
+- Fallback: returns unfiltered data for unknown formats
+
+### Entry Management
+- entries Map stores available options for each selection type
+- selectedEntries Map tracks current user choices
+- Default selections initialize from first available option
+
+## Service Implementations
+
+### Couverture Service
+**Data Source:** `/data/couverture.csv`
+**Metrics:** Population coverage percentage, commune equipment percentage
+**Facilities:** 33 facility types (airports, postal services, healthcare, education)
+**Renderer:** renderCouvertureMap with blue/purple color schemes
+
+### Duree Service  
+**Data Source:** `/data/duree.csv`
+**Metrics:** Median duration, average duration (in minutes)
+**Facilities:** 30 facility types matching couverture categories
+**Renderer:** renderDureeMap with red/orange color schemes
+
+## Renderer Architecture
+
+### Generic Choropleth System
+Both services use renderChoropleth with service-specific configurations:
+
+**Common Parameters:**
+- plotTitle: Dynamic title based on selections
+- tabularData: Filtered service data
+- featureCollection: Geographic boundaries
+- colorScale: Service-specific color schemes and legends
+
+**Data Mapping:**
+- featureKey: Extracts department codes from geographic features
+- rowKey: Extracts department codes from tabular data
+- valueAccessor: Retrieves metric values for visualization
+- numberNormalizer: Handles decimal formatting (comma to dot)
+
+### Visualization Differences
+**Couverture Maps:**
+- Percentage-based color scales
+- Blue scheme for population coverage
+- Purple scheme for commune equipment
+- Dual-metric tooltips
+
+**Duree Maps:**
+- Time-based color scales  
+- Orange scheme for median duration
+- Red scheme for average duration
+- Single-metric tooltips with time formatting

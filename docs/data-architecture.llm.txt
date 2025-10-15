@@ -1,0 +1,81 @@
+# Data Architecture - Cartos RESP 2025
+
+## Data Sources
+
+### Geographic Data
+**Source:** Natural Earth data via loadDepartementsData()
+**Format:** TopoJSON with French departmental boundaries
+**Processing:** Converts to GeoJSON feature collections, background geometry, overlay meshes
+
+**Structure:**
+- featureCollection: Departmental polygons with properties (INSEE_DEP, NOM)
+- backgroundGeometry: Base map outline
+- overlayMeshes: Border lines and administrative boundaries
+- outlineGeometry: Country/region outlines
+
+### Tabular Data
+
+#### Couverture Dataset
+**File:** `/data/couverture.csv`
+**Structure:**
+- DEP: Department code (2-digit, zero-padded)
+- Libelle: Facility type identifier
+- pct_pop: Population coverage percentage (0-1 scale)
+- pct_communes: Commune equipment percentage (0-1 scale)
+
+**Facility Categories:** 33 types including healthcare, education, transportation, public services
+
+#### Duree Dataset  
+**File:** `/data/duree.csv`
+**Structure:**
+- dep: Department code
+- Source: Facility type identifier  
+- moyenne: Average access duration (minutes)
+- mediane: Median access duration (minutes)
+- Libelle_TYPEQU: Human-readable facility label
+
+**Facility Categories:** 30 types covering public services and amenities
+
+## Data Processing Pipeline
+
+### Loading Strategy
+1. Geographic data loads once and caches in store
+2. Service data loads on-demand when service activates
+3. Data filtering occurs reactively based on user selections
+
+### Filtering Logic
+MapService.filteredData applies facility-based filtering:
+- Matches selected facility against appropriate column (Libelle/Source)
+- Returns full dataset when no facility selected
+- Maintains reactive updates when selections change
+
+### Data Normalization
+**Number Processing:**
+- Converts comma decimals to dot decimals
+- Handles null/undefined values
+- Applies percentage scaling for display
+
+**Geographic Matching:**
+- Maps department codes between datasets
+- Handles code formatting inconsistencies
+- Provides fallback matching strategies
+
+## Data Flow Architecture
+
+### Reactive Data Chain
+1. User Selection → Store Action
+2. Store Action → Service State Update  
+3. Service State → filteredData Recomputation
+4. filteredData → Renderer Input
+5. Renderer → Visual Update
+
+### Error Handling
+- Missing data files trigger store error state
+- Invalid data formats fall back to unfiltered display
+- Geographic/tabular mismatches show empty regions
+
+### Performance Considerations
+- Geographic data caches after first load
+- CSV parsing uses D3's optimized parser
+- Filtered data computes on-demand via getters
+- Map rendering debounces through Vue's reactivity system

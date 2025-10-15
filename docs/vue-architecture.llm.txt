@@ -1,0 +1,69 @@
+# Vue Architecture - Cartos RESP 2025
+
+## Component Hierarchy
+
+### Root Level
+- **App.vue**: Main application container
+  - Initializes map services on mount
+  - Manages global loading and error states
+  - Coordinates MapSelector, controls, and MapRenderer
+
+### UI Components
+
+**MapSelector.vue**
+- Provides dropdown interface for map type selection
+- Uses DaisyUI select styling
+- Emits update:selected events for map switching
+
+**SelectInput.vue** 
+- Generic select component for entry selections (facility, metric)
+- Supports v-model:selected binding
+- Dynamically renders options from entries array
+- Used for both facility and metric selection
+
+**MapRenderer.vue**
+- Renders Observable Plot visualizations
+- Receives mapPlot prop containing plot configuration
+- Handles plot mounting and updates
+
+## State Management Pattern
+
+### Pinia Store Integration
+The application uses centralized state management through the map store:
+
+**Reactive Dependencies:**
+- Components bind directly to store computed properties
+- selectedEntries reactive object triggers automatic re-rendering
+- Store handles async operations (data loading, service switching)
+
+**Event Flow:**
+1. User interaction (select change) → Component handler
+2. Component handler → Store action (setSelectedEntry/setCurrentMap)
+3. Store updates → Computed properties recalculate
+4. Computed changes → Component re-renders
+
+## Composition API Usage
+
+### Script Setup Pattern
+All components use `<script setup>` syntax with:
+- TypeScript interfaces for props and emits
+- Direct store access via useMapStore()
+- Reactive event handlers
+
+### Lifecycle Management
+- onMounted hook in App.vue initializes services
+- Store handles async loading states
+- Error boundaries through store error state
+
+## Styling Architecture
+
+### DaisyUI Integration
+- Components use semantic DaisyUI classes
+- Fieldset and legend elements for form structure
+- Loading spinner and alert components for states
+- Select and form-control classes for inputs
+
+### Responsive Design
+- Container mx-auto for centered layout
+- Flex layout for main content structure
+- Py-8 spacing for vertical rhythm
