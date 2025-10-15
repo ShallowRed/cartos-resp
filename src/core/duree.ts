@@ -60,8 +60,8 @@ export function renderDureeMap(geoData: any, service: MapService) {
     plotTitle: title,
     tabularData,
     featureCollection: geoData.featureCollection,
-    featureKey: f => f.properties.INSEE_DEP,
-    rowKey: r => r.dep,
+    featureKey: f => f.properties?.INSEE_DEP || '',
+    rowKey: r => r.dep || '',
     valueAccessor: r => r[chosenDureeMetric],
     numberNormalizer: v => (v == null ? null : +String(v).replace(',', '.')),
     colorScale: {
@@ -75,7 +75,7 @@ export function renderDureeMap(geoData: any, service: MapService) {
     overlayMeshes: geoData.overlayMeshes,
     outlineGeometry: geoData.outlineGeometry,
     titleBuilder: (feat, val, _row) => {
-      const name = feat.properties.NOM
+      const name = feat.properties?.NOM || ''
       return `${name}\nTemps moyen: ${val == null ? '—' : `${val.toFixed(1)} min`}`
     },
   })

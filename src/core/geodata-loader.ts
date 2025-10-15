@@ -1,18 +1,8 @@
+import type { GeoData } from '@/types/service.types'
 import * as d3 from 'd3'
 import * as topojson from '@/core/topojson'
 
-interface OverlayMesh {
-  geo: any // GeoJSON geometry
-  stroke: string
-  strokeWidth: number
-}
-
-export interface GeoDataResult {
-  featureCollection: any // GeoJSON FeatureCollection
-  backgroundGeometry: any // GeoJSON geometry
-  overlayMeshes: OverlayMesh[]
-  outlineGeometry: any // GeoJSON geometry
-}
+export type GeoDataResult = GeoData
 
 // Note: These functions may need proper topojson-specific packages for full typing
 function simplifyTopojson(data: any, quantile: number = 0.01): any {
@@ -62,7 +52,7 @@ export async function loadDepartementsData(): Promise<GeoDataResult> {
   const departementsRegionMesh = topojson.mesh(departementsData, aggregatedRegionsFeatures.features)
 
   return {
-    featureCollection: departementsFeatures,
+    featureCollection: departementsFeatures as any,
     backgroundGeometry: departementsOuterMesh,
     overlayMeshes: [
       { geo: departementsInnerMesh, stroke: '#bbb', strokeWidth: 1 },

@@ -1,8 +1,10 @@
+import type { Feature, FeatureCollection, Geometry } from 'geojson'
+import type { ChoroplethConfig as BaseChoroplethConfig, OverlayMesh, ServiceDataRow } from '@/types/service.types'
 import * as Plot from '@observablehq/plot'
 import * as d3 from 'd3'
 import * as d3CompositeProjections from 'd3-composite-projections'
 
-// Type definitions for choropleth configuration
+// Extended color scale config with internal options
 interface ColorScaleConfig {
   legend?: boolean
   type?: string
@@ -13,51 +15,26 @@ interface ColorScaleConfig {
   percent?: boolean
 }
 
-interface OverlayMesh {
-  geo: any // GeoJSON geometry
-  stroke?: string
-  strokeWidth?: number
-  [key: string]: any
-}
-
-interface ChoroplethConfig {
-  // Data & Joining
-  tabularData: any[]
-  featureCollection: any // GeoJSON FeatureCollection
-  featureKey: (feature: any) => string
-  rowKey: (row: any) => string
-  valueAccessor: (row: any) => any
-  rowFilter: ((row: any) => boolean) | null
-  numberNormalizer: (value: any) => number | null
-
-  // Color Styling
+// Internal ChoroplethConfig with additional options for internal use
+interface ChoroplethConfig extends Omit<BaseChoroplethConfig, 'colorScale' | 'rowKey' | 'plotTitle' | 'featureCollection'> {
+  plotTitle: string | null
+  featureCollection: FeatureCollection<Geometry>
+  rowKey: (row: ServiceDataRow) => string
   colorScale: ColorScaleConfig
   fillUnknown: string
-
-  // Map Projection & Dimensions
-  projection: any // D3 projection
+  projection: any
   width: number
   height: number
   inset: number
   showLegend: boolean
-
-  // Background & Overlays
   backgroundFill: string
-  backgroundGeometry: any | null // GeoJSON geometry
-  overlayMeshes: OverlayMesh[]
-  outlineGeometry: any | null // GeoJSON geometry
+  rowFilter: ((row: ServiceDataRow) => boolean) | null
   outlineStroke: string
   outlineStrokeWidth: number
-
-  // Tooltips
-  titleBuilder: (feature: any, value: number | null, row: any) => string
-
-  // Chart Title
-  plotTitle: string | null
 }
 
 interface DataIndexEntry {
-  row: any
+  row: ServiceDataRow
   value: number | null
 }
 
@@ -65,8 +42,8 @@ interface CentroidPoint {
   lon: number
   lat: number
   value: number | null
-  feature: any
-  row: any
+  feature: Feature<Geometry>
+  row: ServiceDataRow | null
   name: string
 }
 
@@ -115,7 +92,7 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
       tabularData: options.tabularData || [],
 
       // Your GeoJSON FeatureCollection (the geographic boundaries)
-      featureCollection: options.featureCollection,
+      featureCollection: options.featureCollection!,
 
       // Function to extract the join key from a GeoJSON feature
       // Default: looks for INSEE_DEP property (French department code)
@@ -123,7 +100,7 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
 
       // Function to extract the join key from a data row
       // Default: looks for DEP property
-      rowKey: options.rowKey ?? (r => r.DEP),
+      rowKey: options.rowKey ? (r: ServiceDataRow) => options.rowKey!(r) || '' : r => r.DEP || '',
 
       // Function to extract the numeric value to visualize
       // Default: looks for pct_pop property
@@ -185,21 +162,21 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
       // === Background & Overlays ===
       // Optional background layer
       backgroundFill: options.backgroundFill ?? '#d8d8d8',
-      backgroundGeometry: options.backgroundGeometry ?? null,
+      backgroundGeometry: options.backgroundGeometry ?? undefined,
 
       // Additional mesh layers (borders, grids, etc.)
       // Format: [{geo: GeoJSON, stroke: "color", strokeWidth: 1}, ...]
       overlayMeshes: options.overlayMeshes ?? [],
 
       // Optional outline around the entire map
-      outlineGeometry: options.outlineGeometry ?? null,
+      outlineGeometry: options.outlineGeometry ?? undefined,
       outlineStroke: options.outlineStroke ?? '#222',
       outlineStrokeWidth: options.outlineStrokeWidth ?? 1,
 
       // === Tooltips ===
       // Function to build tooltip text
       // Receives: (feature, value, row) -> string
-      titleBuilder: options.titleBuilder ?? ((feature: any, value: number | null, _row: any) => {
+      titleBuilder: options.titleBuilder ?? ((feature: Feature<Geometry>, value: number | null, _row: ServiceDataRow | undefined) => {
         const name = getFeatureName(feature)
         const displayValue = formatValue(value)
         return `${name}\n${displayValue}`
@@ -240,7 +217,7 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
    * We create invisible centroid points that enable precise hover detection.
    */
   function buildCentroidPoints(config: ChoroplethConfig, dataIndex: Map<string, DataIndexEntry>): CentroidPoint[] {
-    return config.featureCollection.features.map((feature: any) => {
+    return config.featureCollection.features.map((feature: Feature<Geometry>) => {
       // Compute geographic centroid (lon, lat in degrees)
       const [lon, lat] = d3.geoCentroid(feature)
 
@@ -314,7 +291,7 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
    */
   function createChoroplethLayer(config: ChoroplethConfig, dataIndex: Map<string, DataIndexEntry>) {
     // Helper: Get fill color for a feature
-    const getFillColor = (feature: any) => {
+    const getFillColor = (feature: Feature<Geometry>) => {
       const key = normalizeKey(config.featureKey(feature))
       const data = dataIndex.get(key)
       return data?.value ?? null
@@ -336,7 +313,7 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
    * Used for borders, grids, or other decorative elements.
    */
   function createOverlayLayers(config: ChoroplethConfig) {
-    return config.overlayMeshes.map(({ geo, ...styleProps }: OverlayMesh) =>
+    return (config.overlayMeshes || []).map(({ geo, ...styleProps }: OverlayMesh) =>
       Plot.geo(geo, {
         pointerEvents: 'none',
         ...styleProps,
@@ -423,7 +400,7 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
    * Extracts a human-readable name from a GeoJSON feature.
    * Tries multiple common property names.
    */
-  function getFeatureName(feature: any, fallbackKey: string = ''): string {
+  function getFeatureName(feature: Feature<Geometry>, fallbackKey: string = ''): string {
     return feature.properties?.NOM
       ?? feature.properties?.nom
       ?? feature.properties?.name

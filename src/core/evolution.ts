@@ -68,7 +68,7 @@ export function renderEvolutionMap(geoData: any, service: MapService) {
   return renderChoropleth({
     tabularData,
     featureCollection: geoData.featureCollection,
-    featureKey: f => depKey(f.properties.INSEE_DEP),
+    featureKey: f => depKey(f.properties?.INSEE_DEP || ''),
     rowKey: r => depKey(r.GEO),
     valueAccessor: r => r[chosenEvolutionMetric],
     numberNormalizer: toNum,

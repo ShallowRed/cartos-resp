@@ -1,11 +1,10 @@
+import type { InputEntry, MapServiceOptions, ServiceDataRow } from '@/types/service.types'
 import * as d3 from 'd3'
-
-interface InputEntry { label: string, key: string }
 
 export default class MapService {
   title: string
   dataFile: string
-  data: any[] = []
+  data: ServiceDataRow[] = []
   entries: Map<string, InputEntry[]>
   selectedEntries: Map<string, string> = new Map() // key: entry key, value: selected entry key
 
@@ -13,11 +12,7 @@ export default class MapService {
     title,
     dataFile,
     entries,
-  }: {
-    title: string
-    dataFile: string
-    entries: Record<string, InputEntry[]>
-  }) {
+  }: MapServiceOptions) {
     this.title = title
     this.dataFile = dataFile
     this.entries = new Map(Object.entries(entries))
@@ -28,8 +23,8 @@ export default class MapService {
     }
   }
 
-  async loadData() {
-    this.data = await d3.csv(this.dataFile)
+  async loadData(): Promise<void> {
+    this.data = await d3.csv(this.dataFile) as ServiceDataRow[]
   }
 
   getSelectedEntry(entryKey: string): string | undefined {
@@ -49,7 +44,7 @@ export default class MapService {
     return entryOptions?.find(e => e.key === selectedKey)?.label
   }
 
-  get filteredData(): any[] {
+  get filteredData(): ServiceDataRow[] {
     const selectedFacility = this.selectedEntries.get('facility')
     if (!selectedFacility) {
       return this.data

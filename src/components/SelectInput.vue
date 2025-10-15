@@ -1,7 +1,9 @@
 <script lang="ts" setup>
+import type { InputEntry } from '@/types/service.types'
+
 defineProps<{
   label: string
-  entries: { label: string, key: string }[]
+  entries: InputEntry[]
 }>()
 
 const id = `select-input-${Math.random().toString(36).substring(2, 15)}`

@@ -12,7 +12,7 @@ onMounted(async () => {
   await mapStore.initialize()
 })
 
-const mapPlot = ref(null)
+const mapPlot = ref<any>(null)
 watch([currentService, currentRenderer, geoData, selectedEntries], () => {
   if (!currentService.value || !currentRenderer.value || !geoData.value) {
     return null

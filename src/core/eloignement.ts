@@ -61,8 +61,8 @@ export function renderEloignementMap(geoData: any, service: MapService) {
     plotTitle: title,
     tabularData, // colonnes: dep, LIBGEO, 5min..60min
     featureCollection: geoData.featureCollection,
-    featureKey: f => f.properties.INSEE_DEP,
-    rowKey: r => r.dep,
+    featureKey: f => f.properties?.INSEE_DEP || '',
+    rowKey: r => r.dep || '',
     valueAccessor: r => r[chosenEloignementMetric] != null ? (+String(r[chosenEloignementMetric]).replace(',', '.')) / 100 : null,
     colorScale: {
       legend: true,

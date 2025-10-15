@@ -1,8 +1,7 @@
 import type MapService from '@/core/map-service'
+import type { GeoData, MapRenderer } from '@/types/service.types'
 
-export interface MapRenderer {
-  (geoData: any, service: MapService): any
-}
+export type { GeoData, MapRenderer }
 
 export interface MapServiceEntry {
   id: string

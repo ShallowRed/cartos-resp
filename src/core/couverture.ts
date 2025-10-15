@@ -1,3 +1,5 @@
+import type { Feature, Geometry } from 'geojson'
+import type { GeoData, ServiceDataRow } from '@/types/service.types'
 import MapService from '@/core/map-service'
 import { renderChoropleth } from '@/core/render-choropleth'
 
@@ -48,8 +50,8 @@ export const couvertureService = new MapService({
   },
 })
 
-export function renderCouvertureMap(geoData: any, service: MapService) {
-  const tabularData: any[] = service.filteredData
+export function renderCouvertureMap(geoData: GeoData, service: MapService) {
+  const tabularData: ServiceDataRow[] = service.filteredData
 
   const chosenCouvertureFacility: string = service.getSelectedEntryLabel('facility') || '-'
   const chosenCouvertureMetric: string = service.getSelectedEntry('metric') || '-'
@@ -58,7 +60,7 @@ export function renderCouvertureMap(geoData: any, service: MapService) {
     ? `Part des communes disposant d'au moins un équipement ou service "${chosenCouvertureFacility}"`
     : `Part de la population couverte par un équipement ou service : "${chosenCouvertureFacility}"`
 
-  const normalizeNumber = (v: any) => {
+  const normalizeNumber = (v: any): number | null => {
     return v == null
       ? null
       : +String(v).replace(',', '.')
@@ -84,12 +86,12 @@ export function renderCouvertureMap(geoData: any, service: MapService) {
     plotTitle: title,
     tabularData,
     featureCollection: geoData.featureCollection,
-    featureKey: (f: any) => {
+    featureKey: (f: Feature<Geometry>) => {
       const p = f.properties || {}
       return String(p.INSEE_DEP ?? p.insee_dep ?? p.code ?? p.DEP).toUpperCase().padStart(2, '0')
     },
-    rowKey: (r: any) => String(r.DEP).toUpperCase().padStart(2, '0'),
-    valueAccessor: (r: any) => r[chosenCouvertureMetric],
+    rowKey: (r: ServiceDataRow) => String(r.DEP).toUpperCase().padStart(2, '0'),
+    valueAccessor: (r: ServiceDataRow) => r[chosenCouvertureMetric],
     numberNormalizer: normalizeNumber,
     colorScale: metricPalette,
     backgroundGeometry: geoData.backgroundGeometry,
@@ -97,7 +99,7 @@ export function renderCouvertureMap(geoData: any, service: MapService) {
     outlineGeometry: geoData.outlineGeometry,
 
     // tooltip : affiche la métrique choisie + l’autre en info
-    titleBuilder: (feature, value, row) => {
+    titleBuilder: (feature: Feature<Geometry>, value: number | null, row?: ServiceDataRow) => {
       const name = feature.properties?.NOM ?? feature.properties?.nom ?? row?.DEP ?? '—'
       const vMain = value == null ? '—' : `${(value * 100).toFixed(1)} %`
       const otherMetric = chosenCouvertureMetric === 'pct_pop' ? 'pct_communes' : 'pct_pop'
