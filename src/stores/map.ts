@@ -4,6 +4,7 @@ import { computed, ref } from 'vue'
 import { couvertureService, renderCouvertureMap } from '@/core/couverture'
 import { dureeService, renderDureeMap } from '@/core/duree'
 import { eloignementService, renderEloignementMap } from '@/core/eloignement'
+import { ErrorHandler, ServiceInitializationError } from '@/core/errors'
 import { evolutionService, renderEvolutionMap } from '@/core/evolution'
 import { loadDepartementsData } from '@/core/geodata-loader'
 import { MapRegistry } from '@/core/map-registry'
@@ -61,7 +62,7 @@ export const useMapStore = defineStore('map', () => {
     try {
       const mapEntry = mapRegistry.get(mapId)
       if (!mapEntry) {
-        throw new Error(`Map service "${mapId}" not found`)
+        throw new ServiceInitializationError(mapId, undefined, { available: mapRegistry.getIds() })
       }
 
       // Load geo data if not already loaded
@@ -76,8 +77,12 @@ export const useMapStore = defineStore('map', () => {
       currentMapId.value = mapId
     }
     catch (err) {
-      error.value = err instanceof Error ? err.message : 'Unknown error occurred'
-      console.error('Failed to load map:', err)
+      const atlasError = err instanceof Error ? err : new Error('Unknown error occurred')
+      error.value = ErrorHandler.getUserMessage(atlasError)
+      ErrorHandler.logError(atlasError instanceof Error
+        ? new ServiceInitializationError(mapId, atlasError)
+        : new ServiceInitializationError(mapId),
+      )
     }
     finally {
       isLoading.value = false

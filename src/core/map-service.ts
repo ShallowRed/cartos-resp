@@ -1,6 +1,6 @@
 import type { InputEntry, MapServiceOptions, ServiceDataRow } from '@/types/service.types'
-import * as d3 from 'd3'
 import { ref } from 'vue'
+import { loadCachedCSVData } from './data-cache'
 
 export default class MapService {
   title: string
@@ -26,7 +26,7 @@ export default class MapService {
   }
 
   async loadData(): Promise<void> {
-    this.data = await d3.csv(this.dataFile) as ServiceDataRow[]
+    this.data = await loadCachedCSVData(this.dataFile)
   }
 
   getSelectedEntry(entryKey: string): string | undefined {
