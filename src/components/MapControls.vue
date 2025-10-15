@@ -47,7 +47,7 @@ const { currentService } = storeToRefs(mapStore)
           class="fieldset"
         >
           <SelectInput
-            :label="control.name"
+            :label="control.label"
             :entries="control.entries"
             :model-value="mapStore.getSelectedEntry(control.key)"
             @update:model-value="(value: any) => value && mapStore.setSelectedEntry(control.key, value)"

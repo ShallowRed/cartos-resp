@@ -1,6 +1,4 @@
 import type { ServiceConfig } from '@/services/base/service-config'
-import { createServiceRenderer } from '@/rendering/generic-renderer'
-import MapService from '@/services/base/map-service'
 
 export const eloignementConfig: ServiceConfig = {
   id: 'eloignement',
@@ -9,7 +7,7 @@ export const eloignementConfig: ServiceConfig = {
   formControls: [
     {
       key: 'metric',
-      name: 'Temps d\'accès',
+      label: 'Temps d\'accès',
       entries: [
         { label: '5 minutes', key: '5min' },
         { label: '10 minutes', key: '10min' },
@@ -22,7 +20,7 @@ export const eloignementConfig: ServiceConfig = {
     },
     {
       key: 'facility',
-      name: 'Service',
+      label: 'Service ou équipement',
       entries: [
         { label: 'Police', key: 'police' },
         { label: 'Gendarmerie', key: 'gendarmerie' },
@@ -62,11 +60,3 @@ export const eloignementConfig: ServiceConfig = {
     },
   },
 }
-
-export const eloignementService = new MapService({
-  title: eloignementConfig.title,
-  dataFile: eloignementConfig.dataFile,
-  formControls: eloignementConfig.formControls,
-})
-
-export const renderEloignementMap = createServiceRenderer(eloignementConfig)

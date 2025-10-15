@@ -48,9 +48,10 @@ The application uses a registry-based architecture for handling multiple map typ
 > **Detailed Coverage**: See `services.llm.txt` for MapService class design, service implementations, and renderer architecture.
 
 **Service Pattern:**
-- MapService base class with CSV loading, entry management, and filtering
-- Four service implementations (couverture, duree, eloignement, evolution)
-- Registry-based service discovery and management with renderer functions
+- MapService base class with CSV loading, form control management, and filtering
+- Configuration-driven architecture with ServiceConfig objects in dedicated config files
+- ServiceFactory handles MapService instantiation and renderer creation
+- Pre-configured MapRegistry provides centralized service discovery and management
 
 #### Component Architecture
 

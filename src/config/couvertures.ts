@@ -1,6 +1,4 @@
 import type { ServiceConfig } from '@/services/base/service-config'
-import { createServiceRenderer } from '@/rendering/generic-renderer'
-import MapService from '@/services/base/map-service'
 
 export const couvertureConfig: ServiceConfig = {
   id: 'couverture',
@@ -9,7 +7,7 @@ export const couvertureConfig: ServiceConfig = {
   formControls: [
     {
       key: 'metric',
-      name: 'Indicateur',
+      label: 'Indicateur',
       entries: [
         { label: '% de la population couverte', key: 'pct_pop' },
         { label: '% des communes équipées', key: 'pct_communes' },
@@ -17,7 +15,7 @@ export const couvertureConfig: ServiceConfig = {
     },
     {
       key: 'facility',
-      name: 'Service',
+      label: 'Service ou équipement',
       entries: [
         { label: 'Aéroport', key: 'aeroport' },
         { label: 'Agence postale', key: 'agence_postale' },
@@ -83,11 +81,3 @@ export const couvertureConfig: ServiceConfig = {
     },
   },
 }
-
-export const couvertureService = new MapService({
-  title: couvertureConfig.title,
-  dataFile: couvertureConfig.dataFile,
-  formControls: couvertureConfig.formControls,
-})
-
-export const renderCouvertureMap = createServiceRenderer(couvertureConfig)

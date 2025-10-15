@@ -3,19 +3,9 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { loadDepartementsData } from '@/data/geodata-loader'
 import { ErrorHandler, ServiceInitializationError } from '@/lib/errors'
-import { MapRegistry } from '@/services/base/map-registry'
-import { couvertureService, renderCouvertureMap } from '@/services/couverture'
-import { dureeService, renderDureeMap } from '@/services/duree'
-import { eloignementService, renderEloignementMap } from '@/services/eloignement'
-import { evolutionService, renderEvolutionMap } from '@/services/evolution'
+import { mapRegistry } from '@/services/registry-setup'
 
 export const useMapStore = defineStore('map', () => {
-  const mapRegistry = new MapRegistry()
-  mapRegistry.register('couverture', couvertureService, renderCouvertureMap)
-  mapRegistry.register('duree', dureeService, renderDureeMap)
-  mapRegistry.register('eloignement', eloignementService, renderEloignementMap)
-  mapRegistry.register('evolution', evolutionService, renderEvolutionMap)
-
   // State
   const currentMapId = ref<string | null>(null)
   const geoData = ref<any>(null)

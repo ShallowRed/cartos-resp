@@ -19,7 +19,7 @@ export interface InputEntry {
  */
 export interface FormControl {
   key: string
-  name: string
+  label: string
   entries: InputEntry[]
 }
 

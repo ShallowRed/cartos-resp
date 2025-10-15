@@ -19,7 +19,7 @@
 
 **SelectInput.vue** 
 - Generic select component for facility and metric selections
-- TypeScript props interface with formControls array and modelValue
+- TypeScript props interface with entries array and modelValue
 - DaisyUI form-control and select styling
 - Emits update:modelValue for Vue 3 v-model compatibility
 
@@ -35,9 +35,9 @@
 The application uses centralized state management through the useMapStore:
 
 **Store Structure:**
-- MapRegistry instance with four registered services
-- Reactive refs for currentMapId, geoData, selectedFormControls, loading/error states
-- Computed properties for currentService, currentRenderer, formControls, availableMaps
+- Pre-configured MapRegistry imported from registry-setup module
+- Reactive refs for currentMapId, geoData, loading/error states
+- Computed properties for currentService, currentRenderer, formControls (returns FormControl[]), availableMaps
 - Actions for setCurrentMap, setSelectedEntry, getSelectedEntry, initialize
 
 **Reactive Dependencies:**
@@ -68,6 +68,20 @@ All components use `<script setup>` syntax with:
 - Async loading states with isLoading reactive ref
 - Error boundaries through store error state with UI alerts
 - Geodata loads once and caches, service data loads per-service
+
+### Dynamic Form Controls
+The application renders form controls dynamically based on service configuration:
+
+**FormControl Iteration Pattern:**
+- Template iterates over store.formControls array (FormControl objects)
+- Each FormControl provides key (identifier), label (display label), and entries (options)
+- SelectInput components receive control.label as label and control.entries as options
+- User selections are tracked by control.key through store.setSelectedEntry
+
+**Template Structure:**
+- v-for iterates FormControl objects instead of Map entries
+- Displays user-friendly names from FormControl.label property
+- Maintains reactivity through key-based selectedFormControls tracking
 
 ## Styling Architecture
 

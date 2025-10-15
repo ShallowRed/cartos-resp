@@ -1,6 +1,4 @@
 import type { ServiceConfig } from '@/services/base/service-config'
-import { createServiceRenderer } from '@/rendering/generic-renderer'
-import MapService from '@/services/base/map-service'
 
 export const dureeConfig: ServiceConfig = {
   id: 'duree',
@@ -9,7 +7,7 @@ export const dureeConfig: ServiceConfig = {
   formControls: [
     {
       key: 'metric',
-      name: 'Indicateur',
+      label: 'Indicateur',
       entries: [
         { label: 'valeur médiane', key: 'mediane' },
         { label: 'valeur moyenne', key: 'moyenne' },
@@ -17,7 +15,7 @@ export const dureeConfig: ServiceConfig = {
     },
     {
       key: 'facility',
-      name: 'Service',
+      label: 'Service ou équipement',
       entries: [
         { label: 'Police', key: 'police' },
         { label: 'Gendarmerie', key: 'gendarmerie' },
@@ -48,11 +46,3 @@ export const dureeConfig: ServiceConfig = {
     },
   },
 }
-
-export const dureeService = new MapService({
-  title: dureeConfig.title,
-  dataFile: dureeConfig.dataFile,
-  formControls: dureeConfig.formControls,
-})
-
-export const renderDureeMap = createServiceRenderer(dureeConfig)

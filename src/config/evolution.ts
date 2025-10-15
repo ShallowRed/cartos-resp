@@ -1,6 +1,4 @@
 import type { ServiceConfig } from '@/services/base/service-config'
-import { createServiceRenderer } from '@/rendering/generic-renderer'
-import MapService from '@/services/base/map-service'
 
 export const evolutionConfig: ServiceConfig = {
   id: 'evolution',
@@ -9,7 +7,7 @@ export const evolutionConfig: ServiceConfig = {
   formControls: [
     {
       key: 'metric',
-      name: 'Indicateur',
+      label: 'Indicateur',
       entries: [
         { label: 'Évolution (%)', key: 'Evolution_pct' },
         { label: 'Évolution (nombre)', key: 'Evolution_nbr' },
@@ -17,7 +15,7 @@ export const evolutionConfig: ServiceConfig = {
     },
     {
       key: 'facility',
-      name: 'Service',
+      label: 'Service ou équipement',
       entries: [
         { label: 'Lycée d\'enseignement technique', key: 'lycee_denseignement_technique_' },
         { label: 'Agence postale', key: 'agence_postale' },
@@ -58,11 +56,3 @@ export const evolutionConfig: ServiceConfig = {
     },
   },
 }
-
-export const evolutionService = new MapService({
-  title: evolutionConfig.title,
-  dataFile: evolutionConfig.dataFile,
-  formControls: evolutionConfig.formControls,
-})
-
-export const renderEvolutionMap = createServiceRenderer(evolutionConfig)

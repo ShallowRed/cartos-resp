@@ -5,16 +5,46 @@
 ### MapRegistry System
 Central registry managing available map services:
 
-**Registration Process:**
-- Services register with unique ID, MapService instance, and renderer function
-- Registry provides discovery methods (get, getAll, getIds)
-- Type-safe MapServiceEntry interface ensures consistency
+**Configuration-Driven Architecture:**
+- ServiceConfig objects define service metadata, form controls, and rendering options
+- ServiceFactory creates MapService instances and renderer functions from configurations
+- Pre-configured registry automatically registers all services using factory pattern
+- Registry provides discovery methods (get, getAll, getIds) with type-safe MapServiceEntry interface
 
 **Service Lifecycle:**
-1. Service registration during app initialization
-2. Service discovery through registry queries
-3. Service instantiation and data loading on demand
-4. Service state management through store
+1. Configuration loading from dedicated config files
+2. Service and renderer creation via ServiceFactory during app initialization  
+3. Automatic service registration in pre-configured MapRegistry
+4. Service discovery through registry queries and data loading on demand
+
+## Configuration Architecture
+
+### ServiceConfig Pattern
+Service definitions use declarative configuration objects:
+
+**Configuration Structure:**
+- Service metadata (id, title, dataFile paths)
+- FormControl arrays with key, label, and entries properties
+- Rendering configuration (color schemes, title templates, tooltip settings)
+- Data processing options (normalization, key mappings)
+
+**Configuration Location:**
+- Dedicated config files in `src/config/` folder
+- Separation of configuration from instantiation logic
+- Centralized service definitions for maintainability
+
+### ServiceFactory Pattern
+Factory class handles service and renderer creation:
+
+**Factory Methods:**
+- `ServiceFactory.createService()` - Creates MapService instances from ServiceConfig
+- `ServiceFactory.createRenderer()` - Creates renderer functions from ServiceConfig
+- `ServiceFactory.create()` - Creates both service and renderer as a tuple
+
+**Benefits:**
+- Consistent instantiation logic across all services
+- Separation of configuration from creation concerns
+- Scalable pattern for adding new services
 
 ## MapService Base Class
 
@@ -33,7 +63,7 @@ The filteredData getter supports multiple data formats:
 - Fallback: returns unfiltered data for unknown formats
 
 ### Form Control Management
-- formControls array stores FormControl objects with key, name, and entries properties
+- formControls array stores FormControl objects with key, label, and entries properties
 - selectedFormControls Map tracks current user choices by control key
 - Default selections initialize from first available entry in each FormControl
 - FormControl structure provides user-friendly display names and organized entry groups
@@ -43,7 +73,7 @@ Each service defines formControls as an array of FormControl objects:
 
 **FormControl Interface:**
 - key: Unique identifier for the control (e.g., 'metric', 'facility')
-- name: User-friendly display name (e.g., 'Indicateur', 'Service', 'Temps d\'accès')
+- label: User-friendly display label (e.g., 'Indicateur', 'Service', 'Temps d\'accès')
 - entries: Array of InputEntry objects with label and key properties
 
 **Standard Control Types:**
@@ -55,40 +85,44 @@ Each service defines formControls as an array of FormControl objects:
 - Standard: 'Indicateur' for metrics, 'Service' for facilities
 - Eloignement: 'Temps d\'accès' for time-based metric controls
 
-## Service Implementations
+## Service Configurations
 
-### Couverture Service
+### Couverture Configuration
+**Configuration File:** `src/config/couvertures.ts`
 **Data Source:** `/data/couverture.csv`
 **Title:** "Couverture des équipements et services"
 **Metrics:** Population coverage percentage, commune equipment percentage
 **Facilities:** 33 facility types (airports, postal services, healthcare, education)
-**Renderer:** renderCouvertureMap with blue/purple color schemes
+**Rendering:** Blue/purple color schemes with percentage-based scales
 
-### Duree Service  
+### Duree Configuration  
+**Configuration File:** `src/config/duree.ts`
 **Data Source:** `/data/duree.csv`
 **Title:** "Durées d'accès aux équipements ou services publics"
 **Metrics:** Median duration, average duration (in minutes)
-**Facilities:** 30 facility types matching couverture categories
-**Renderer:** renderDureeMap with red/orange color schemes
+**Facilities:** Police and Gendarmerie services
+**Rendering:** Red/orange color schemes with time-based scales
 
-### Eloignement Service
+### Eloignement Configuration
+**Configuration File:** `src/config/eloignement.ts`
 **Data Source:** `/data/eloignement.csv`
 **Title:** "Éloignements des populations aux équipements ou services publics"
 **Metrics:** Time thresholds (5, 10, 15, 20, 30, 45, 60 minutes)
-**Facilities:** 30 facility types plus "panier (ensemble)" composite metric
-**Renderer:** renderEloignementMap with distance-based color schemes
+**Facilities:** Police, Gendarmerie, and Bureau de poste services
+**Rendering:** Distance-based color schemes
 
-### Evolution Service
+### Evolution Configuration
+**Configuration File:** `src/config/evolution.ts`
 **Data Source:** `/data/evolution.csv`
 **Title:** "Évolution du maillage des équipements ou services publics entre 2019 et 2024"
 **Metrics:** Evolution percentage, evolution count (2019-2024 change)
 **Facilities:** 10 facility types focusing on key public services
-**Renderer:** renderEvolutionMap with diverging color schemes for change visualization
+**Rendering:** Diverging color schemes for change visualization
 
 ## Renderer Architecture
 
-### Generic Choropleth System
-Both services use renderChoropleth with service-specific configurations:
+### Factory-Generated Renderers
+ServiceFactory creates renderer functions from ServiceConfig objects using the generic choropleth system:
 
 **Common Parameters:**
 - plotTitle: Dynamic title based on selections
