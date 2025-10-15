@@ -1,0 +1,57 @@
+{
+  "name": "cartos-resp-2025",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "imports": {
+    "#types": "./types/index.ts",
+    "#types/*": "./types/*.ts",
+    "#scripts/*": "./scripts/*.ts"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "pnpm typecheck:frontend && pnpm typecheck:scripts",
+    "typecheck:frontend": "vue-tsc --noEmit -p src/tsconfig.json",
+    "typecheck:scripts": "tsc --noEmit -p scripts/tsconfig.json",
+    "lint": "eslint --ext .ts,.tsx,.vue src",
+    "lint:fix": "eslint --fix --ext .ts,.tsx,.vue src"
+  },
+  "dependencies": {
+    "@observablehq/plot": "^0.6.17",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "d3": "^7.9.0",
+    "d3-composite-projections": "^2.0.0",
+    "d3-geo": "^3.1.1",
+    "d3-geo-projection": "^4.0.0",
+    "d3-path": "^3.1.0",
+    "daisyui": "^5.1.26",
+    "pinia": "^3.0.3",
+    "remixicon": "^4.6.0",
+    "tailwindcss": "^4.1.14",
+    "topojson-client": "^3.1.0",
+    "topojson-simplify": "^3.0.3",
+    "vue": "^3.5.22",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^5.4.1",
+    "@tailwindcss/postcss": "^4.1.14",
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/d3": "^7.4.3",
+    "@types/d3-geo": "^3.1.0",
+    "@types/node": "^24.6.2",
+    "@types/topojson-client": "^3.1.5",
+    "@types/topojson-specification": "^1.0.5",
+    "@vue/tsconfig": "^0.8.1",
+    "@vueuse/core": "^13.9.0",
+    "eslint": "^9.36.0",
+    "tsx": "^4.20.6",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.7",
+    "vite-plugin-eslint": "^1.8.1",
+    "vue-tsc": "^3.1.0"
+  }
+}

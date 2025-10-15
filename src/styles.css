@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "remixicon/fonts/remixicon.css";
+
+@plugin "daisyui" {
+  /* themes: fantasy --default; */
+  themes: all;
+  /* themes: light --default, dark --prefersdark; */
+}
