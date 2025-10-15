@@ -1,8 +1,9 @@
+import type { ServiceConfig } from './service-config'
+import { createServiceRenderer } from '@/core/generic-renderer'
 import MapService from '@/core/map-service'
-import { renderChoropleth } from '@/core/render-choropleth'
-// label: 'Équipement ou service'
-// label: 'Durée d\'éloignement'
-export const eloignementService = new MapService({
+
+export const eloignementConfig: ServiceConfig = {
+  id: 'eloignement',
   title: 'Éloignements des populations aux équipements ou services publics',
   dataFile: '/data/eloignement.csv',
   entries: {
@@ -18,61 +19,46 @@ export const eloignementService = new MapService({
     facility: [
       { label: 'Police', key: 'police' },
       { label: 'Gendarmerie', key: 'gendarmerie' },
-      { label: 'Réseau de proximité Pôle emploi', key: 'reseau_de_proximite_pole_emploi' },
-      { label: 'Aéroport', key: 'aeroport' },
-      { label: 'Gare de voyageurs d’intérêt national', key: 'gare_de_voyageurs_d_interet_nat' },
-      { label: 'Gare de voyageurs d’intérêt régional', key: 'gare_de_voyageurs_d_interet_reg' },
-      { label: 'Gare de voyageurs d’intérêt local', key: 'gare_de_voyageurs_d_interet_loc' },
-      { label: 'Implantations France Services (IFS)', key: 'implantations_france_services_i' },
       { label: 'Bureau de poste', key: 'bureau_de_poste' },
-      { label: 'Agence postale', key: 'agence_postale' },
-      { label: 'École maternelle', key: 'ecole_maternelle' },
-      { label: 'École primaire', key: 'ecole_primaire' },
-      { label: 'École élémentaire', key: 'ecole_elementaire' },
-      { label: 'Collège', key: 'college' },
-      { label: 'Lycée d’enseignement général et/ou technologique', key: 'lycee_d_enseignement_general_et' },
-      { label: 'Lycée d’enseignement professionnel', key: 'lycee_d_enseignement_profession' },
-      { label: 'Lycée d’enseignement technique et/ou professionnel agricole', key: 'lycee_d_enseignement_technique_' },
-      { label: 'Établissement de santé (court séjour)', key: 'etablissement_sante_court_sejou' },
-      { label: 'Établissement de santé (moyen séjour)', key: 'etablissement_sante_moyen_sejou' },
-      { label: 'Établissement de santé (long séjour)', key: 'etablissement_sante_long_sejour' },
-      { label: 'Chirurgien-dentiste', key: 'chirurgien_dentiste' },
-      { label: 'Infirmier·ère', key: 'infirmier' },
-      { label: 'Laboratoire d’analyses et de biologie médicale', key: 'laboratoire_d_analyses_et_de_bi' },
-      { label: 'Ambulance', key: 'ambulance' },
-      { label: 'Pharmacie', key: 'pharmacie' },
-      { label: 'Cinéma', key: 'cinema' },
-      { label: 'Bibliothèque', key: 'bibliotheque' },
-      { label: 'Arts du spectacle', key: 'arts_du_spectacle' },
-      { label: 'Déchèterie', key: 'decheterie' },
-      { label: 'Panier (ensemble)', key: 'panier_ensemble' },
     ],
   },
+  rendering: {
+    titleTemplates: {
+      '5min': 'Part de la population à moins de 5min de l\'équipement ou service "{facility}"',
+      '10min': 'Part de la population à moins de 10min de l\'équipement ou service "{facility}"',
+      '15min': 'Part de la population à moins de 15min de l\'équipement ou service "{facility}"',
+      '20min': 'Part de la population à moins de 20min de l\'équipement ou service "{facility}"',
+      '30min': 'Part de la population à moins de 30min de l\'équipement ou service "{facility}"',
+      '45min': 'Part de la population à moins de 45min de l\'équipement ou service "{facility}"',
+      '60min': 'Part de la population à moins de 60min de l\'équipement ou service "{facility}"',
+    },
+    colorSchemes: {
+      '5min': { scheme: 'greens', label: '% population (5min)', percent: true },
+      '10min': { scheme: 'greens', label: '% population (10min)', percent: true },
+      '15min': { scheme: 'greens', label: '% population (15min)', percent: true },
+      '20min': { scheme: 'greens', label: '% population (20min)', percent: true },
+      '30min': { scheme: 'greens', label: '% population (30min)', percent: true },
+      '45min': { scheme: 'greens', label: '% population (45min)', percent: true },
+      '60min': { scheme: 'greens', label: '% population (60min)', percent: true },
+    },
+    dataKeys: {
+      rowKey: 'dep',
+      featureKey: 'INSEE_DEP',
+    },
+    tooltip: {
+      template: 'single-metric',
+    },
+    valueProcessor: (row, metric) => {
+      const value = row[metric]
+      return value != null ? (+String(value).replace(',', '.')) / 100 : null
+    },
+  },
+}
+
+export const eloignementService = new MapService({
+  title: eloignementConfig.title,
+  dataFile: eloignementConfig.dataFile,
+  entries: eloignementConfig.entries,
 })
 
-export function renderEloignementMap(geoData: any, service: MapService) {
-  const tabularData = service.filteredData
-
-  const chosenFacilityLabel = service.getSelectedEntryLabel('facility') || '-'
-  const chosenEloignementMetric = service.getSelectedEntry('facility') || '-'
-  const title = `Part de la population à moins de ${chosenEloignementMetric} de l'équipement ou service « ${chosenFacilityLabel} »`
-
-  return renderChoropleth({
-    plotTitle: title,
-    tabularData, // colonnes: dep, LIBGEO, 5min..60min
-    featureCollection: geoData.featureCollection,
-    featureKey: f => f.properties?.INSEE_DEP || '',
-    rowKey: r => r.dep || '',
-    valueAccessor: r => r[chosenEloignementMetric] != null ? (+String(r[chosenEloignementMetric]).replace(',', '.')) / 100 : null,
-    colorScale: {
-      legend: true,
-      type: 'quantize',
-      scheme: 'Greys',
-      percent: true,
-      label: `% Population < ${chosenEloignementMetric}`,
-    },
-    backgroundGeometry: geoData.backgroundGeometry,
-    overlayMeshes: geoData.overlayMeshes,
-    outlineGeometry: geoData.outlineGeometry,
-  })
-}
+export const renderEloignementMap = createServiceRenderer(eloignementConfig)

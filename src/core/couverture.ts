@@ -1,9 +1,9 @@
-import type { Feature, Geometry } from 'geojson'
-import type { GeoData, ServiceDataRow } from '@/types/service.types'
+import type { ServiceConfig } from './service-config'
 import MapService from '@/core/map-service'
-import { renderChoropleth } from '@/core/render-choropleth'
+import { createServiceRenderer } from './generic-renderer'
 
-export const couvertureService = new MapService({
+export const couvertureConfig: ServiceConfig = {
+  id: 'couverture',
   title: 'Couverture des équipements et services',
   dataFile: '/data/couverture.csv',
   entries: {
@@ -25,16 +25,16 @@ export const couvertureService = new MapService({
       { label: 'Établissement de santé (court séjour)', key: 'etablissement_sante_court_sejour' },
       { label: 'Établissement de santé (long séjour)', key: 'etablissement_sante_long_sejour' },
       { label: 'Établissement de santé (moyen séjour)', key: 'etablissement_sante_moyen_sejour' },
-      { label: 'Gare de voyageurs d’intérêt local', key: 'gare_de_voyageurs_d_interet_local' },
-      { label: 'Gare de voyageurs d’intérêt national', key: 'gare_de_voyageurs_d_interet_national' },
-      { label: 'Gare de voyageurs d’intérêt régional', key: 'gare_de_voyageurs_d_interet_regional' },
+      { label: 'Gare de voyageurs d\'intérêt local', key: 'gare_de_voyageurs_d_interet_local' },
+      { label: 'Gare de voyageurs d\'intérêt national', key: 'gare_de_voyageurs_d_interet_national' },
+      { label: 'Gare de voyageurs d\'intérêt régional', key: 'gare_de_voyageurs_d_interet_regional' },
       { label: 'Gendarmerie', key: 'gendarmerie' },
       { label: 'Implantation France Services (IFS)', key: 'implantations_france_services_ifs' },
       { label: 'Infirmier·ère', key: 'infirmier' },
-      { label: 'Laboratoire d’analyses et de biologie médicale', key: 'laboratoire_d_analyses_et_de_biologie_medicale' },
-      { label: 'Lycée d’enseignement général et/ou technologique', key: 'lycee_d_enseignement_general_et_ou_technologique' },
-      { label: 'Lycée d’enseignement professionnel', key: 'lycee_d_enseignement_professionnel' },
-      { label: 'Lycée d’enseignement technique et/ou professionnel agricole', key: 'lycee_d_enseignement_technique_et_ou_professionnel_agricole' },
+      { label: 'Laboratoire d\'analyses et de biologie médicale', key: 'laboratoire_d_analyses_et_de_biologie_medicale' },
+      { label: 'Lycée d\'enseignement général et/ou technologique', key: 'lycee_d_enseignement_general_et_ou_technologique' },
+      { label: 'Lycée d\'enseignement professionnel', key: 'lycee_d_enseignement_professionnel' },
+      { label: 'Lycée d\'enseignement technique et/ou professionnel agricole', key: 'lycee_d_enseignement_technique_et_ou_professionnel_agricole' },
       { label: 'Maternité', key: 'maternite' },
       { label: 'Médecin généraliste', key: 'medecin_generaliste' },
       { label: 'Pharmacie', key: 'pharmacie' },
@@ -48,67 +48,38 @@ export const couvertureService = new MapService({
       { label: '% des communes équipées', key: 'pct_communes' },
     ],
   },
+  rendering: {
+    titleTemplates: {
+      pct_communes: 'Part des communes disposant d\'au moins un équipement ou service "{facility}"',
+      pct_pop: 'Part de la population couverte par un équipement ou service : "{facility}"',
+    },
+    colorSchemes: {
+      pct_pop: {
+        scheme: 'blues',
+        label: '% population couverte',
+        percent: true,
+      },
+      pct_communes: {
+        scheme: 'purples',
+        label: '% communes équipées',
+        percent: true,
+      },
+    },
+    dataKeys: {
+      rowKey: 'DEP',
+      featureKey: 'default',
+    },
+    tooltip: {
+      template: 'dual-metric',
+      includeSecondaryMetric: true,
+    },
+  },
+}
+
+export const couvertureService = new MapService({
+  title: couvertureConfig.title,
+  dataFile: couvertureConfig.dataFile,
+  entries: couvertureConfig.entries,
 })
 
-export function renderCouvertureMap(geoData: GeoData, service: MapService) {
-  const tabularData: ServiceDataRow[] = service.filteredData
-
-  const chosenCouvertureFacility: string = service.getSelectedEntryLabel('facility') || '-'
-  const chosenCouvertureMetric: string = service.getSelectedEntry('metric') || '-'
-
-  const title = chosenCouvertureMetric === 'pct_communes'
-    ? `Part des communes disposant d'au moins un équipement ou service "${chosenCouvertureFacility}"`
-    : `Part de la population couverte par un équipement ou service : "${chosenCouvertureFacility}"`
-
-  const normalizeNumber = (v: any): number | null => {
-    return v == null
-      ? null
-      : +String(v).replace(',', '.')
-  }
-
-  const metricPalette = chosenCouvertureMetric === 'pct_pop'
-    ? {
-        legend: true,
-        type: 'quantize',
-        scheme: 'blues',
-        percent: true,
-        label: '% population couverte',
-      }
-    : {
-        legend: true,
-        type: 'quantize',
-        scheme: 'purples',
-        percent: true,
-        label: '% communes équipées',
-      }
-
-  return renderChoropleth({
-    plotTitle: title,
-    tabularData,
-    featureCollection: geoData.featureCollection,
-    featureKey: (f: Feature<Geometry>) => {
-      const p = f.properties || {}
-      return String(p.INSEE_DEP ?? p.insee_dep ?? p.code ?? p.DEP).toUpperCase().padStart(2, '0')
-    },
-    rowKey: (r: ServiceDataRow) => String(r.DEP).toUpperCase().padStart(2, '0'),
-    valueAccessor: (r: ServiceDataRow) => r[chosenCouvertureMetric],
-    numberNormalizer: normalizeNumber,
-    colorScale: metricPalette,
-    backgroundGeometry: geoData.backgroundGeometry,
-    overlayMeshes: geoData.overlayMeshes,
-    outlineGeometry: geoData.outlineGeometry,
-
-    // tooltip : affiche la métrique choisie + l’autre en info
-    titleBuilder: (feature: Feature<Geometry>, value: number | null, row?: ServiceDataRow) => {
-      const name = feature.properties?.NOM ?? feature.properties?.nom ?? row?.DEP ?? '—'
-      const vMain = value == null ? '—' : `${(value * 100).toFixed(1)} %`
-      const otherMetric = chosenCouvertureMetric === 'pct_pop' ? 'pct_communes' : 'pct_pop'
-      const vOther = row && row[otherMetric] != null
-        ? `${((normalizeNumber(row[otherMetric]) ?? 0) * 100).toFixed(1)} %`
-        : '—'
-      const mainLabel = chosenCouvertureMetric === 'pct_pop' ? '% pop couverte' : '% communes équipées'
-      const otherLabel = chosenCouvertureMetric === 'pct_pop' ? '% communes équipées' : '% pop couverte'
-      return `${name}\n${chosenCouvertureFacility}\n${mainLabel}: ${vMain}\n${otherLabel}: ${vOther}`
-    },
-  })
-}
+export const renderCouvertureMap = createServiceRenderer(couvertureConfig)

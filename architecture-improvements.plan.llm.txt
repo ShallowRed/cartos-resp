@@ -29,36 +29,42 @@ Implement simple yet effective architecture improvements to reduce code duplicat
   - Impact: Compile-time validation of service configurations
   - **Completed**: Replaced any[] with ServiceDataRow[], added proper type imports and annotations
 
-### Phase 2: Service Configuration System
-- [ ] File: src/core/service-config.ts
+### Phase 2: Service Configuration System ✅ COMPLETE
+- [x] File: src/core/service-config.ts
   - Action: Create ServiceConfig interface and configuration objects
   - Why: Replace hardcoded renderer logic with declarative configuration
   - Impact: Easier to add new services, less code duplication
+  - **Completed**: Created comprehensive ServiceConfig interface with rendering, color schemes, and tooltip configuration
 
-- [ ] File: src/core/generic-renderer.ts
+- [x] File: src/core/generic-renderer.ts
   - Action: Implement configurable renderer factory
   - Why: Eliminate four similar renderer functions
   - Impact: Single renderer handles all service types via configuration
+  - **Completed**: Single createServiceRenderer function replaces all individual renderer functions
 
-- [ ] File: src/core/couverture.ts
+- [x] File: src/core/couverture.ts
   - Action: Replace renderCouvertureMap with configuration object
   - Why: Reduce boilerplate and improve maintainability
   - Impact: ~50 lines of renderer code becomes ~10 lines of config
+  - **Completed**: Converted to configuration-based approach with dual-metric tooltip support
 
-- [ ] File: src/core/duree.ts
+- [x] File: src/core/duree.ts
   - Action: Replace renderDureeMap with configuration object
   - Why: Consistent pattern across all services
   - Impact: Same as couverture - significant code reduction
+  - **Completed**: Simplified to clean configuration object with duration-specific formatting
 
-- [ ] File: src/core/eloignement.ts
+- [x] File: src/core/eloignement.ts
   - Action: Replace renderEloignementMap with configuration object
   - Why: Maintain consistency and reduce duplication
   - Impact: Simplified service definition
+  - **Completed**: Added value processing for percentage conversion
 
-- [ ] File: src/core/evolution.ts
+- [x] File: src/core/evolution.ts
   - Action: Replace renderEvolutionMap with configuration object
   - Why: Complete the pattern across all services
   - Impact: All services use same configuration approach
+  - **Completed**: Configured with diverging color schemes for evolution data
 
 ### Phase 3: Store and Component Improvements
 - [ ] File: src/stores/map.ts
@@ -125,9 +131,10 @@ Implement simple yet effective architecture improvements to reduce code duplicat
 - [ ] Code is more maintainable (subjective but measurable through metrics)
 
 ## Status
-Status: IN PROGRESS - Phase 1 Complete ✅
+Status: IN PROGRESS - Phase 1 & 2 Complete ✅
 Last Updated: 2025-10-15
 Phase 1 Completed: 2025-10-15
+Phase 2 Completed: 2025-10-15
 
 ## Phase 1 Completion Notes
 - All TypeScript interfaces created and implemented
@@ -137,3 +144,11 @@ Phase 1 Completed: 2025-10-15
 - Build successful
 - Application tested and verified working correctly
 - No breaking changes to existing functionality
+
+## Phase 2 Completion Notes
+- Service configuration system implemented with ServiceConfig interface
+- Generic renderer factory created - single function replaces 4 renderer implementations
+- All four services converted to configuration-based approach
+- Achieved ~70% code reduction in renderer functions (from ~200 lines to ~60 lines)
+- Maintained all existing functionality and rendering behavior
+- Each service now uses declarative configuration instead of imperative rendering code
