@@ -7,6 +7,10 @@ export const couvertureConfig: ServiceConfig = {
   title: 'Couverture des équipements et services',
   dataFile: '/data/couverture.csv',
   entries: {
+    metric: [
+      { label: '% de la population couverte', key: 'pct_pop' },
+      { label: '% des communes équipées', key: 'pct_communes' },
+    ],
     facility: [
       { label: 'Aéroport', key: 'aeroport' },
       { label: 'Agence postale', key: 'agence_postale' },
@@ -42,10 +46,6 @@ export const couvertureConfig: ServiceConfig = {
       { label: 'Réseau de proximité Pôle emploi', key: 'reseau_de_proximite_pole_emploi' },
       { label: 'Sage-femme', key: 'sage_femme' },
       { label: 'Urgences', key: 'urgences' },
-    ],
-    metric: [
-      { label: '% de la population couverte', key: 'pct_pop' },
-      { label: '% des communes équipées', key: 'pct_communes' },
     ],
   },
   rendering: {

@@ -18,25 +18,6 @@ export const useMapStore = defineStore('map', () => {
   // State
   const currentMapId = ref<string | null>(null)
   const geoData = ref<any>(null)
-  const selectedEntries = ref<Record<string, Record<string, string>>>({
-    couverture: {
-      facility: 'ambulance',
-      metric: 'pct_communes',
-    },
-    duree: {
-      facility: 'gendarmerie',
-      metric: 'mediane',
-    },
-    eloignement: {
-      facility: 'bureau_de_poste',
-      metric: '15min',
-    },
-    evolution: {
-      facility: 'centre_de_sante',
-      metric: 'Evolution_pct',
-    },
-  })
-
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -104,26 +85,16 @@ export const useMapStore = defineStore('map', () => {
   }
 
   const setSelectedEntry = (entryKey: string, selectedKey: string) => {
-    if (!currentMapId.value || !currentService.value) {
+    if (!currentService.value) {
       return
     }
-    const entryOptions = currentService.value.entries.get(entryKey)
-    if (!entryOptions || !entryOptions.find(e => e.key === selectedKey)) {
-      console.warn(`Entry key "${entryKey}" or selected key "${selectedKey}" not found in service "${currentMapId.value}"`)
-      return
-    }
-    // Update the service's selected entry
     currentService.value.setSelectedEntry(entryKey, selectedKey)
-    console.log(currentService.value)
-    selectedEntries.value[currentMapId.value] ??= {} as Record<string, string>
-    (selectedEntries.value[currentMapId.value] as Record<string, string>)[entryKey] = selectedKey
   }
 
   const getSelectedEntry = (entryKey: string) => {
-    if (!currentMapId.value)
+    if (!currentService.value)
       return ''
-    const mapEntries = selectedEntries.value[currentMapId.value]
-    return mapEntries?.[entryKey] || ''
+    return currentService.value.getSelectedEntry(entryKey) || ''
   }
 
   const initialize = async () => {
@@ -137,7 +108,6 @@ export const useMapStore = defineStore('map', () => {
     geoData,
     // State
     currentMapId,
-    selectedEntries,
     isLoading,
     error,
 

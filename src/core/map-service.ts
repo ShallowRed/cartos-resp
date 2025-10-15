@@ -1,5 +1,6 @@
 import type { InputEntry, MapServiceOptions, ServiceDataRow } from '@/types/service.types'
 import * as d3 from 'd3'
+import { ref } from 'vue'
 
 export default class MapService {
   title: string
@@ -7,6 +8,7 @@ export default class MapService {
   data: ServiceDataRow[] = []
   entries: Map<string, InputEntry[]>
   selectedEntries: Map<string, string> = new Map() // key: entry key, value: selected entry key
+  version = ref(0) // Reactive trigger for UI updates
 
   constructor({
     title,
@@ -33,6 +35,7 @@ export default class MapService {
 
   setSelectedEntry(entryKey: string, selectedKey: string) {
     this.selectedEntries.set(entryKey, selectedKey)
+    this.version.value++
   }
 
   getSelectedEntryLabel(entryKey: string): string | undefined {

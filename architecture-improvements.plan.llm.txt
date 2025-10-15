@@ -66,26 +66,30 @@ Implement simple yet effective architecture improvements to reduce code duplicat
   - Impact: All services use same configuration approach
   - **Completed**: Configured with diverging color schemes for evolution data
 
-### Phase 3: Store and Component Improvements
-- [ ] File: src/stores/map.ts
+### Phase 3: Store and Component Improvements ✅ COMPLETE
+- [x] File: src/stores/map.ts
   - Action: Simplify store by removing selectedEntries management
   - Why: Let services handle their own state, reduce store complexity
   - Impact: Cleaner separation of concerns, simpler state management
+  - **Completed**: Removed selectedEntries state, let services handle their own selection state
 
-- [ ] File: src/components/MapControls.vue
+- [x] File: src/components/MapControls.vue
   - Action: Extract control logic from App.vue into dedicated component
   - Why: Better component composition and separation of concerns
   - Impact: App.vue becomes simpler, controls are reusable
+  - **Completed**: Extracted all control logic including map selection and dynamic indicator controls
 
-- [ ] File: src/components/MapVisualization.vue
+- [x] File: src/components/MapVisualization.vue
   - Action: Extract visualization logic from App.vue
   - Why: Single responsibility principle
   - Impact: Better component organization
+  - **Completed**: Extracted all visualization logic including loading, error, and rendering states
 
-- [ ] File: src/App.vue
+- [x] File: src/App.vue
   - Action: Simplify to use new MapControls and MapVisualization components
   - Why: Remove direct service management from root component
   - Impact: Cleaner, more maintainable root component
+  - **Completed**: Simplified to only handle initialization and use new components
 
 ### Phase 4: Error Handling and Data Loading
 - [ ] File: src/core/errors.ts
@@ -131,10 +135,11 @@ Implement simple yet effective architecture improvements to reduce code duplicat
 - [ ] Code is more maintainable (subjective but measurable through metrics)
 
 ## Status
-Status: IN PROGRESS - Phase 1 & 2 Complete ✅
+Status: IN PROGRESS - Phase 1, 2 & 3 Complete ✅
 Last Updated: 2025-10-15
 Phase 1 Completed: 2025-10-15
 Phase 2 Completed: 2025-10-15
+Phase 3 Completed: 2025-10-15
 
 ## Phase 1 Completion Notes
 - All TypeScript interfaces created and implemented
@@ -152,3 +157,13 @@ Phase 2 Completed: 2025-10-15
 - Achieved ~70% code reduction in renderer functions (from ~200 lines to ~60 lines)
 - Maintained all existing functionality and rendering behavior
 - Each service now uses declarative configuration instead of imperative rendering code
+
+## Phase 3 Completion Notes
+- Map store simplified by removing centralized selectedEntries management
+- Services now handle their own state through existing setSelectedEntry/getSelectedEntry methods
+- Created MapControls.vue component extracting all control logic from App.vue
+- Created MapVisualization.vue component extracting all visualization logic
+- App.vue simplified from 131 lines to ~30 lines, now only handles initialization
+- Better separation of concerns achieved with single-responsibility components
+- Improved component reusability and maintainability
+- No breaking changes to existing functionality

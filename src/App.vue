@@ -1,24 +1,14 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { onMounted, ref, watch } from 'vue'
-import MapRenderer from '@/components/MapRenderer.vue'
-import SelectInput from '@/components/SelectInput.vue'
+import { onMounted } from 'vue'
+import MapControls from '@/components/MapControls.vue'
+import MapVisualization from '@/components/MapVisualization.vue'
 import { useMapStore } from '@/stores/map'
 
 const mapStore = useMapStore()
-const { currentService, currentRenderer, geoData, selectedEntries } = storeToRefs(mapStore)
 
 onMounted(async () => {
   await mapStore.initialize()
 })
-
-const mapPlot = ref<any>(null)
-watch([currentService, currentRenderer, geoData, selectedEntries], () => {
-  if (!currentService.value || !currentRenderer.value || !geoData.value) {
-    return null
-  }
-  mapPlot.value = currentRenderer.value(geoData.value, currentService.value)
-}, { immediate: true, deep: true })
 </script>
 
 <template>
@@ -51,79 +41,9 @@ watch([currentService, currentRenderer, geoData, selectedEntries], () => {
             label="Sélectionner une carte"
             @update:selected="mapStore.setCurrentMap"
           /> -->
-          <div class="card bg-base-100 border border-base-300 rounded-lg">
-            <div class="card-body">
-              <div>
-                <label
-                  class="fieldset-legend text-sm"
-                  for="#map-service-select"
-                >
-                  Sélectionner une carte
-                </label>
-                <select
-                  id="map-service-select"
-                  class="select select-bordered cursor-pointer"
-                  :value="mapStore.currentMapId"
-                  @change="(e) => mapStore.setCurrentMap((e.target as HTMLSelectElement).value)"
-                >
-                  <option
-                    v-for="entry in mapStore.availableMaps"
-                    :key="entry.id"
-                    :value="entry.id"
-                  >
-                    {{ entry.title }}
-                  </option>
-                </select>
-              </div>
-              <!-- Dynamic Controls -->
-              <fieldset
-                v-if="mapStore.currentService"
-                class="fieldset bg-base-100 border-base-300 rounded-box w-xs border p-4"
-              >
-                <legend class="fieldset-legend text-sm">
-                  Indicateurs
-                </legend>
-                <div
-                  v-for="[key, entries] in mapStore.entriesMap"
-                  :key="key"
-                  class="fieldset"
-                >
-                  <SelectInput
-                    :label="key"
-                    :entries="entries"
-                    :model-value="mapStore.getSelectedEntry(key)"
-                    @update:model-value="(value: any) => value && mapStore.setSelectedEntry(key, value)"
-                  />
-                </div>
-              </fieldset>
-            </div>
-          </div>
+          <MapControls />
         </div>
-        <div class="flex-1 flex flex-col gap-4">
-          <!-- Loading State -->
-          <div
-            v-if="mapStore.isLoading"
-            class="flex justify-center items-center py-8"
-          >
-            <span class="loading loading-spinner loading-lg" />
-          </div>
-
-          <!-- Error State -->
-          <div
-            v-else-if="mapStore.error"
-            class="alert alert-error"
-          >
-            <span>{{ mapStore.error }}</span>
-          </div>
-
-          <!-- Map Renderer -->
-          <template v-else-if="mapStore.currentService">
-            <MapRenderer
-              v-if="mapPlot"
-              :map-plot="mapPlot"
-            />
-          </template>
-        </div>
+        <MapVisualization />
       </div>
     </main>
   </div>
