@@ -1,6 +1,6 @@
-import type { ServiceConfig } from './service-config'
-import { createServiceRenderer } from '@/core/generic-renderer'
-import MapService from '@/core/map-service'
+import type { ServiceConfig } from '@/services/base/service-config'
+import { createServiceRenderer } from '@/rendering/generic-renderer'
+import MapService from '@/services/base/map-service'
 
 export const eloignementConfig: ServiceConfig = {
   id: 'eloignement',

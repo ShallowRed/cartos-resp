@@ -1,6 +1,6 @@
 import type { GeoData } from '@/types/service.types'
 import * as d3 from 'd3'
-import * as topojson from '@/core/topojson'
+import * as topojson from '@/data/topojson'
 
 export type GeoDataResult = GeoData
 

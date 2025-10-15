@@ -1,13 +1,13 @@
-import type { MapServiceEntry } from '@/core/map-registry'
+import type { MapServiceEntry } from '@/services/base/map-registry'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { couvertureService, renderCouvertureMap } from '@/core/couverture'
-import { dureeService, renderDureeMap } from '@/core/duree'
-import { eloignementService, renderEloignementMap } from '@/core/eloignement'
-import { ErrorHandler, ServiceInitializationError } from '@/core/errors'
-import { evolutionService, renderEvolutionMap } from '@/core/evolution'
-import { loadDepartementsData } from '@/core/geodata-loader'
-import { MapRegistry } from '@/core/map-registry'
+import { loadDepartementsData } from '@/data/geodata-loader'
+import { ErrorHandler, ServiceInitializationError } from '@/lib/errors'
+import { MapRegistry } from '@/services/base/map-registry'
+import { couvertureService, renderCouvertureMap } from '@/services/couverture'
+import { dureeService, renderDureeMap } from '@/services/duree'
+import { eloignementService, renderEloignementMap } from '@/services/eloignement'
+import { evolutionService, renderEvolutionMap } from '@/services/evolution'
 
 export const useMapStore = defineStore('map', () => {
   const mapRegistry = new MapRegistry()
@@ -35,7 +35,7 @@ export const useMapStore = defineStore('map', () => {
     return currentMapEntry.value?.renderer || null
   })
 
-  const formControlsMap = computed(() => {
+  const formControls = computed(() => {
     if (!currentService.value)
       return []
     return Array.from(currentService.value.formControls.entries())
@@ -119,7 +119,7 @@ export const useMapStore = defineStore('map', () => {
     // Getters
     currentService,
     currentRenderer,
-    formControlsMap,
+    formControls,
     availableMaps,
 
     // Actions

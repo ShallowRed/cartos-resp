@@ -1,12 +1,12 @@
-import type { ServiceConfig } from '@/core/service-config'
-import { createServiceRenderer } from '@/core/generic-renderer'
-import MapService from '@/core/map-service'
+import type { ServiceConfig } from '@/services/base/service-config'
+import { createServiceRenderer } from '@/rendering/generic-renderer'
+import MapService from '@/services/base/map-service'
 
 export const evolutionConfig: ServiceConfig = {
   id: 'evolution',
   title: 'Évolution du maillage des équipements ou services publics entre 2019 et 2024',
   dataFile: '/data/merged-evolution.csv',
-  entries: {
+  formControls: {
     metric: [
       { label: 'Évolution (%)', key: 'Evolution_pct' },
       { label: 'Évolution (nombre)', key: 'Evolution_nbr' },
@@ -54,7 +54,7 @@ export const evolutionConfig: ServiceConfig = {
 export const evolutionService = new MapService({
   title: evolutionConfig.title,
   dataFile: evolutionConfig.dataFile,
-  entries: evolutionConfig.entries,
+  formControls: evolutionConfig.formControls,
 })
 
 export const renderEvolutionMap = createServiceRenderer(evolutionConfig)

@@ -1,4 +1,4 @@
-import type MapService from '@/core/map-service'
+import type MapService from '@/services/base/map-service'
 import type { GeoData, MapRenderer } from '@/types/service.types'
 
 export type { GeoData, MapRenderer }

@@ -1,6 +1,6 @@
-import type { ServiceConfig } from './service-config'
-import MapService from '@/core/map-service'
-import { createServiceRenderer } from './generic-renderer'
+import type { ServiceConfig } from '@/services/base/service-config'
+import { createServiceRenderer } from '@/rendering/generic-renderer'
+import MapService from '@/services/base/map-service'
 
 export const couvertureConfig: ServiceConfig = {
   id: 'couverture',

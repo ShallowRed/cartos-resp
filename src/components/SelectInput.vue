@@ -3,7 +3,7 @@ import type { InputEntry } from '@/types/service.types'
 
 defineProps<{
   label: string
-  formControls: InputEntry[]
+  entries: InputEntry[]
 }>()
 
 const id = `select-input-${Math.random().toString(36).substring(2, 15)}`
@@ -25,7 +25,7 @@ const selected = defineModel<string>()
       class="select select-bordered cursor-pointer"
     >
       <option
-        v-for="entry in formControls"
+        v-for="entry in entries"
         :key="entry.key"
         :value="entry.key"
       >

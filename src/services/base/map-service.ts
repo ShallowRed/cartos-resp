@@ -1,6 +1,6 @@
 import type { InputEntry, MapServiceOptions, ServiceDataRow } from '@/types/service.types'
 import { ref } from 'vue'
-import { loadCachedCSVData } from './data-cache'
+import { loadCachedCSVData } from '@/data/data-cache'
 
 export default class MapService {
   title: string

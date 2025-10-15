@@ -37,7 +37,7 @@ The application uses centralized state management through the useMapStore:
 **Store Structure:**
 - MapRegistry instance with four registered services
 - Reactive refs for currentMapId, geoData, selectedFormControls, loading/error states
-- Computed properties for currentService, currentRenderer, formControlsMap, availableMaps
+- Computed properties for currentService, currentRenderer, formControls, availableMaps
 - Actions for setCurrentMap, setSelectedEntry, getSelectedEntry, initialize
 
 **Reactive Dependencies:**

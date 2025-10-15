@@ -1,6 +1,6 @@
 import type { ServiceDataRow } from '@/types/service.types'
 import * as d3 from 'd3'
-import { DataLoadError, ErrorHandler } from './errors'
+import { DataLoadError, ErrorHandler } from '@/lib/errors'
 
 interface CacheEntry {
   data: ServiceDataRow[]

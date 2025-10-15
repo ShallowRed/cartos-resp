@@ -1,4 +1,4 @@
-import type { ServiceDataRow } from '../types/service.types'
+import type { ServiceDataRow } from '@/types/service.types'
 
 /**
  * Template string interpolation for dynamic titles

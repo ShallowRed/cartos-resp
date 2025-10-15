@@ -1,8 +1,8 @@
-import type { GeoData, MapRenderer, ServiceDataRow } from '../types/service.types'
-import type MapService from '@/core/map-service'
-import type { ServiceConfig, ServiceRenderConfig } from '@/core/service-config'
-import { renderChoropleth } from '@/core/render-choropleth'
-import { defaultFeatureKey, defaultNumberNormalizer, interpolateTitle } from '@/core/service-config'
+import type MapService from '@/services/base/map-service'
+import type { ServiceConfig, ServiceRenderConfig } from '@/services/base/service-config'
+import type { GeoData, MapRenderer, ServiceDataRow } from '@/types/service.types'
+import { renderChoropleth } from '@/rendering/render-choropleth'
+import { defaultFeatureKey, defaultNumberNormalizer, interpolateTitle } from '@/services/base/service-config'
 
 /**
  * Creates a generic renderer function from service configuration
