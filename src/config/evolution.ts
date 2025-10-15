@@ -3,7 +3,7 @@ import type { ServiceConfig } from '@/services/service-config'
 export const evolutionConfig: ServiceConfig = {
   id: 'evolution',
   title: 'Évolution du maillage des équipements ou services publics entre 2019 et 2024',
-  dataFile: '/data/merged-evolution.csv',
+  dataFile: '/data/evolution.csv',
   formControls: [
     {
       key: 'metric',
@@ -48,7 +48,7 @@ export const evolutionConfig: ServiceConfig = {
       },
     },
     dataKeys: {
-      rowKey: 'DEP',
+      rowKey: 'GEO',
       featureKey: 'default',
     },
     tooltip: {

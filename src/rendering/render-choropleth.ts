@@ -13,6 +13,7 @@ interface ColorScaleConfig {
   domain?: [number, number]
   tickFormat?: (d: number) => string
   percent?: boolean
+  _needsDivergingDomain?: boolean
 }
 
 // Internal ChoroplethConfig with additional options for internal use
@@ -72,6 +73,20 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
 
   // ========== DATA PREPARATION ==========
   const dataIndex = buildDataIndex(config)
+
+  // ========== DIVERGING DOMAIN CALCULATION ==========
+  // Calculate symmetric domain for diverging scales if needed
+  if (config.colorScale._needsDivergingDomain) {
+    const values = Array.from(dataIndex.values())
+      .map(entry => entry.value)
+      .filter(v => v !== null) as number[]
+
+    if (values.length > 0) {
+      const maxAbs = Math.max(...values.map(Math.abs))
+      config.colorScale.domain = [-maxAbs, maxAbs]
+      delete config.colorScale._needsDivergingDomain
+    }
+  }
 
   // ========== CHART CONSTRUCTION ==========
   const chart = buildChart(config, dataIndex)
@@ -133,9 +148,14 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
         // Create the final config object
         const finalConfig: any = { ...plotOptions }
 
-        // Only add domain if explicitly provided by user
+        // Handle domain calculation for diverging scales
         if (options.colorScale?.domain !== undefined) {
           finalConfig.domain = domain
+        }
+        else if (plotOptions.type === 'diverging') {
+          // For diverging scales without explicit domain, calculate symmetric domain
+          // We'll do this after data processing when we have access to all values
+          finalConfig._needsDivergingDomain = true
         }
 
         // Add percentage formatting if percent is true
