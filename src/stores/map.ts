@@ -1,4 +1,4 @@
-import type { MapServiceEntry } from '@/services/base/map-registry'
+import type { MapServiceEntry } from '@/services/map-registry'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { loadDepartementsData } from '@/data/geodata-loader'

@@ -1,4 +1,4 @@
-import type { ServiceConfig } from '@/services/base/service-config'
+import type { ServiceConfig } from '@/services/service-config'
 
 export const eloignementConfig: ServiceConfig = {
   id: 'eloignement',

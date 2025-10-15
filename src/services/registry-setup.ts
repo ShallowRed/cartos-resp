@@ -2,7 +2,7 @@ import { couvertureConfig } from '@/config/couvertures'
 import { dureeConfig } from '@/config/duree'
 import { eloignementConfig } from '@/config/eloignement'
 import { evolutionConfig } from '@/config/evolution'
-import { MapRegistry } from '@/services/base/map-registry'
+import { MapRegistry } from '@/services/map-registry'
 import { ServiceFactory } from '@/services/service-factory'
 
 /**
