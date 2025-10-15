@@ -8,7 +8,17 @@ import { useMapStore } from '@/stores/map'
 const mapStore = useMapStore()
 
 onMounted(async () => {
-  await mapStore.initialize()
+  // Check if there are URL parameters to restore state
+  const urlParams = new URLSearchParams(window.location.search)
+
+  if (urlParams.has('map')) {
+    // Initialize from URL parameters
+    await mapStore.initializeFromUrlParams(urlParams)
+  }
+  else {
+    // Initialize with default state
+    await mapStore.initialize()
+  }
 })
 </script>
 

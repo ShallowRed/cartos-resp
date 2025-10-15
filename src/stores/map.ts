@@ -99,6 +99,47 @@ export const useMapStore = defineStore('map', () => {
     }
   }
 
+  const initializeFromUrlParams = async (urlParams: URLSearchParams) => {
+    const mapId = urlParams.get('map')
+    const availableMapIds = mapRegistry.getIds()
+
+    // Use map from URL if valid, otherwise use first available
+    const targetMapId = mapId && availableMapIds.includes(mapId) ? mapId : availableMapIds[0]
+
+    if (targetMapId) {
+      await setCurrentMap(targetMapId)
+
+      // Restore form control selections after service is loaded
+      if (currentService.value) {
+        for (const control of currentService.value.formControls) {
+          const selectedValue = urlParams.get(`control_${control.key}`)
+          if (selectedValue && control.entries.some(entry => entry.key === selectedValue)) {
+            setSelectedEntry(control.key, selectedValue)
+          }
+        }
+      }
+    }
+  }
+
+  const getShareableUrl = () => {
+    if (!currentMapId.value || !currentService.value) {
+      return ''
+    }
+
+    const url = new URL(window.location.href)
+    url.searchParams.set('map', currentMapId.value)
+
+    // Add form control selections
+    for (const control of currentService.value.formControls) {
+      const selectedValue = getSelectedEntry(control.key)
+      if (selectedValue) {
+        url.searchParams.set(`control_${control.key}`, selectedValue)
+      }
+    }
+
+    return url.toString()
+  }
+
   return {
     geoData,
     // State
@@ -117,5 +158,7 @@ export const useMapStore = defineStore('map', () => {
     setSelectedEntry,
     getSelectedEntry,
     initialize,
+    initializeFromUrlParams,
+    getShareableUrl,
   }
 })

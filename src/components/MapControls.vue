@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import SelectInput from '@/components/SelectInput.vue'
+import ShareButton from '@/components/ShareButton.vue'
 import { useMapStore } from '@/stores/map'
 
 const mapStore = useMapStore()
@@ -27,6 +28,11 @@ const { currentService } = storeToRefs(mapStore)
         :model-value="mapStore.getSelectedEntry(control.key)"
         @update:model-value="(value: any) => value && mapStore.setSelectedEntry(control.key, value)"
       />
+    </div>
+
+    <!-- Share Button -->
+    <div class="mt-4 pt-4 border-t border-base-300">
+      <ShareButton />
     </div>
   </fieldset>
 </template>

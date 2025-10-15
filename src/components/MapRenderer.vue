@@ -20,5 +20,14 @@ watch([mapPlot, mapContainer], ([plot, container]) => {
 <template>
   <div
     ref="mapContainer"
+    class="map-container"
   />
 </template>
+
+<style scoped>
+@import 'tailwindcss';
+
+.map-container:deep(h2) {
+  @apply text-lg font-semibold mb-4;
+}
+</style>
