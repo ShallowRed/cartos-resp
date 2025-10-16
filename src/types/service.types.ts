@@ -5,6 +5,7 @@
 
 import type * as Plot from '@observablehq/plot'
 import type { Feature, FeatureCollection, Geometry } from 'geojson'
+import type { Ref } from 'vue'
 
 /**
  * Entry option for select inputs (facilities, metrics, etc.)
@@ -106,6 +107,7 @@ export interface MapService {
   data: ServiceDataRow[]
   formControls: FormControl[]
   selectedFormControls: Map<string, string>
+  version: Ref<number>
 
   loadData: () => Promise<void>
   getSelectedEntry: (entryKey: string) => string | undefined

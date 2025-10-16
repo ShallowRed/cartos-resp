@@ -20,6 +20,11 @@ export function createServiceRenderer(config: ServiceConfig): MapRenderer {
       throw new Error(`No color scheme configured for metric: ${metricKey}`)
     }
 
+    const selectedSchemeKey = service.getSelectedEntry('colorScheme')
+    const resolvedScheme = !selectedSchemeKey || selectedSchemeKey === 'auto'
+      ? metricConfig.scheme
+      : selectedSchemeKey
+
     // Generate title
     const titleTemplate = renderConfig.titleTemplates[metricKey]
     if (!titleTemplate) {
@@ -57,7 +62,7 @@ export function createServiceRenderer(config: ServiceConfig): MapRenderer {
     const colorScale = {
       legend: metricConfig.legend ?? true,
       type: metricConfig.type || 'quantize',
-      scheme: metricConfig.scheme,
+      scheme: resolvedScheme,
       percent: metricConfig.percent,
       label: metricConfig.label,
       ...(metricConfig.domain && Array.isArray(metricConfig.domain) && metricConfig.domain.length === 2

@@ -1,4 +1,5 @@
 import type { ServiceConfig } from '@/services/service-config'
+import { COLOR_SCHEME_OPTIONS } from '@/config/color-schemes'
 
 export const dureeConfig: ServiceConfig = {
   id: 'duree',
@@ -49,6 +50,11 @@ export const dureeConfig: ServiceConfig = {
         { label: 'Déchèterie', key: 'decheterie' },
         { label: 'Panier', key: 'Panier' },
       ],
+    },
+    {
+      key: 'colorScheme',
+      label: 'Palette de couleurs',
+      entries: COLOR_SCHEME_OPTIONS,
     },
   ],
   rendering: {

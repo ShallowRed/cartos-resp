@@ -1,4 +1,5 @@
 import type { ServiceConfig } from '@/services/service-config'
+import { COLOR_SCHEME_OPTIONS } from '@/config/color-schemes'
 
 export const evolutionConfig: ServiceConfig = {
   id: 'evolution',
@@ -28,6 +29,11 @@ export const evolutionConfig: ServiceConfig = {
         { label: 'Aéroport', key: 'aeroport' },
         { label: 'Gares (voyageurs)', key: 'gares' },
       ],
+    },
+    {
+      key: 'colorScheme',
+      label: 'Palette de couleurs',
+      entries: COLOR_SCHEME_OPTIONS,
     },
   ],
   rendering: {

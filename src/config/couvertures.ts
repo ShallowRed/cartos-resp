@@ -1,4 +1,5 @@
 import type { ServiceConfig } from '@/services/service-config'
+import { COLOR_SCHEME_OPTIONS } from '@/config/color-schemes'
 
 export const couvertureConfig: ServiceConfig = {
   id: 'couverture',
@@ -52,6 +53,11 @@ export const couvertureConfig: ServiceConfig = {
         { label: 'Sage-femme', key: 'sage_femme' },
         { label: 'Urgences', key: 'urgences' },
       ],
+    },
+    {
+      key: 'colorScheme',
+      label: 'Palette de couleurs',
+      entries: COLOR_SCHEME_OPTIONS,
     },
   ],
   rendering: {

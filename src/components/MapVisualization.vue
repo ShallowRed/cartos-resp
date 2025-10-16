@@ -24,7 +24,7 @@ watch([
 </script>
 
 <template>
-  <div class="flex-1 flex flex-col  bg-base-100 shadow-md border rounded-3xl border-base-300 p-6 gap-6">
+  <div class="flex-1 flex flex-col  bg-base-100 shadow-md border rounded-md border-base-300 p-6 gap-6">
     <MapPickerTabs />
     <!-- Map Renderer -->
     <div

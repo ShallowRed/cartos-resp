@@ -1,4 +1,5 @@
 import type { ServiceConfig } from '@/services/service-config'
+import { COLOR_SCHEME_OPTIONS } from '@/config/color-schemes'
 
 export const eloignementConfig: ServiceConfig = {
   id: 'eloignement',
@@ -26,6 +27,11 @@ export const eloignementConfig: ServiceConfig = {
         { label: 'Gendarmerie', key: 'gendarmerie' },
         { label: 'Bureau de poste', key: 'bureau_de_poste' },
       ],
+    },
+    {
+      key: 'colorScheme',
+      label: 'Palette de couleurs',
+      entries: COLOR_SCHEME_OPTIONS,
     },
   ],
   rendering: {
