@@ -4,7 +4,7 @@ import { COLOR_SCHEME_OPTIONS } from '@/config/color-schemes'
 export const dureeConfig: ServiceConfig = {
   id: 'duree',
   title: 'Durées d\'accès',
-  dataFile: '/data/duree.csv',
+  dataFile: `${import.meta.env.BASE_URL}data/duree.csv`,
   formControls: [
     {
       key: 'metric',

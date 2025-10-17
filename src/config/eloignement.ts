@@ -4,7 +4,7 @@ import { COLOR_SCHEME_OPTIONS } from '@/config/color-schemes'
 export const eloignementConfig: ServiceConfig = {
   id: 'eloignement',
   title: 'Éloignements des populations',
-  dataFile: '/data/eloignement.csv',
+  dataFile: `${import.meta.env.BASE_URL}data/eloignement.csv`,
   formControls: [
     {
       key: 'metric',

@@ -26,7 +26,7 @@ function getAggregatedFeature(
 }
 
 export async function loadDepartementsData(): Promise<GeoDataResult> {
-  const rawData = await d3.json('/data/departements.json')
+  const rawData = await d3.json(`${import.meta.env.BASE_URL}data/departements.json`)
   const departementsData = simplifyTopojson(rawData, 0.2)
 
   const departementsFeatures = topojson.feature(departementsData, departementsData.objects['departements-light'])

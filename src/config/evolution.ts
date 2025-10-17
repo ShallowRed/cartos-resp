@@ -4,7 +4,7 @@ import { COLOR_SCHEME_OPTIONS } from '@/config/color-schemes'
 export const evolutionConfig: ServiceConfig = {
   id: 'evolution',
   title: 'Évolution du maillage (2019-2024)',
-  dataFile: '/data/evolution.csv',
+  dataFile: `${import.meta.env.BASE_URL}data/evolution.csv`,
   formControls: [
     {
       key: 'metric',
