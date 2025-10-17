@@ -47,10 +47,11 @@ export interface GeoData {
  */
 export interface ColorScaleConfig {
   legend: boolean
-  type: 'quantize' | 'threshold' | 'ordinal'
-  scheme: string
+  type: 'quantize' | 'threshold' | 'ordinal' | 'diverging' | 'quantile'
+  scheme?: string
   percent?: boolean
   label: string
+  range?: string[]
 }
 
 /**

@@ -1,6 +1,20 @@
 import type MapService from '@/services/map-service'
 import type { ServiceConfig, ServiceRenderConfig } from '@/services/service-config'
 import type { GeoData, MapRenderer, ServiceDataRow } from '@/types/service.types'
+import {
+  interpolateCividis,
+  interpolateMagma,
+  interpolatePlasma,
+  interpolateViridis,
+  schemeBlues,
+  schemeGreens,
+  schemeGreys,
+  schemeOranges,
+  schemePurples,
+  schemeRdBu,
+  schemeReds,
+} from 'd3'
+import { CUSTOM_COLOR_SCHEMES } from '@/config/color-schemes'
 import { renderChoropleth } from '@/rendering/render-choropleth'
 import { defaultFeatureKey, defaultNumberNormalizer, interpolateTitle } from '@/services/service-config'
 
@@ -21,9 +35,21 @@ export function createServiceRenderer(config: ServiceConfig): MapRenderer {
     }
 
     const selectedSchemeKey = service.getSelectedEntry('colorScheme')
-    const resolvedScheme = !selectedSchemeKey || selectedSchemeKey === 'auto'
+    const customRange = selectedSchemeKey && selectedSchemeKey !== 'auto'
+      ? CUSTOM_COLOR_SCHEMES[selectedSchemeKey] ?? undefined
+      : undefined
+
+    const resolvedScheme = !selectedSchemeKey || selectedSchemeKey === 'auto' || customRange
       ? metricConfig.scheme
       : selectedSchemeKey
+
+    const palette = customRange ?? getPaletteForScheme(resolvedScheme)
+    const fallbackOutline = palette?.[palette.length - 1] ?? '#222'
+    const outlineStrokeValue = `var(--choropleth-outline-color, ${fallbackOutline})`
+
+    if (typeof document !== 'undefined') {
+      document.documentElement.style.setProperty('--choropleth-outline-color', fallbackOutline)
+    }
 
     // Generate title
     const titleTemplate = renderConfig.titleTemplates[metricKey]
@@ -62,7 +88,7 @@ export function createServiceRenderer(config: ServiceConfig): MapRenderer {
     const colorScale = {
       legend: metricConfig.legend ?? true,
       type: metricConfig.type || 'quantize',
-      scheme: resolvedScheme,
+      ...(customRange ? { range: customRange } : { scheme: resolvedScheme }),
       percent: metricConfig.percent,
       label: metricConfig.label,
       ...(metricConfig.domain && Array.isArray(metricConfig.domain) && metricConfig.domain.length === 2
@@ -92,6 +118,7 @@ export function createServiceRenderer(config: ServiceConfig): MapRenderer {
       backgroundGeometry: geoData.backgroundGeometry,
       overlayMeshes: geoData.overlayMeshes,
       outlineGeometry: geoData.outlineGeometry,
+      outlineStroke: outlineStrokeValue,
       titleBuilder,
     })
   }
@@ -152,4 +179,41 @@ function formatValue(value: number, metricConfig: any): string {
   }
 
   return value.toFixed(1)
+}
+
+function getPaletteForScheme(scheme?: string): string[] | undefined {
+  if (!scheme) {
+    return undefined
+  }
+
+  const normalized = scheme.toLowerCase()
+
+  const discreteLookup: Record<string, readonly string[]> = {
+    blues: schemeBlues[9]!,
+    greens: schemeGreens[9]!,
+    reds: schemeReds[9]!,
+    oranges: schemeOranges[9]!,
+    purples: schemePurples[9]!,
+    greys: schemeGreys[9]!,
+    rdbu: schemeRdBu[11]!,
+  }
+
+  if (discreteLookup[normalized]) {
+    return [...discreteLookup[normalized]]
+  }
+
+  const interpolatorLookup: Record<string, (t: number) => string> = {
+    viridis: interpolateViridis,
+    magma: interpolateMagma,
+    plasma: interpolatePlasma,
+    cividis: interpolateCividis,
+  }
+
+  if (interpolatorLookup[normalized]) {
+    const interpolator = interpolatorLookup[normalized]
+    const steps = 8
+    return Array.from({ length: steps }, (_, idx) => interpolator((idx + 1) / steps))
+  }
+
+  return undefined
 }
