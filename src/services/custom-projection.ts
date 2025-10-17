@@ -6,7 +6,7 @@ import { geoConicConformal, geoMercator } from 'd3-geo'
  * Export date: 17/10/2025
  *
  * Pattern: single-focus
- * Territories: France Métropolitaine, Guadeloupe, Martinique, Guyane, La Réunion, Mayotte, Saint-Martin, Saint-Pierre-et-Miquelon, Wallis-et-Futuna, Polynésie française, Polynésie française (îles éloignées), Nouvelle-Calédonie, Terres australes et antarctiques françaises
+ * Territories: France Métropolitaine, Guadeloupe, Martinique, Guyane, La Réunion, Mayotte.
  * Language: JavaScript
  */
 import { config } from './projection-preset'
@@ -19,12 +19,11 @@ export function createFranceProjection() {
   registerProjection('mercator', () => geoMercator())
 
   // Step 3: Load the composite projection
-  // Specify the target dimensions for the projection
-  // Adjust width and height as needed for your use case
+  // Use canvas dimensions from the projection config
   const projection = loadCompositeProjection(config, {
-    width: 960,
-    height: 500,
-    debug: true,
+    width: config.canvasDimensions.width,
+    height: config.canvasDimensions.height,
+    // debug: true,
   })
 
   return projection

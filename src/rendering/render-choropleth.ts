@@ -179,7 +179,7 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
       // D3 projection for transforming coordinates
       projection: createFranceProjection,
       // projection: options.projection ?? d3CompositeProjections.geoConicConformalFrance(),
-      width: options.width ?? 960,
+      width: options.width ?? 750,
       height: options.height ?? 500,
       inset: options.inset ?? 8,
 
