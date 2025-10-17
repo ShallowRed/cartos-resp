@@ -12,7 +12,7 @@ const outDir = path.resolve(__dirname, 'dist')
 export default defineConfig(env => ({
   root: srcDir,
   publicDir: path.resolve(srcDir, 'public'),
-  base: env.mode === 'production' ? '/cartos-resp-2025/' : '/',
+  base: env.mode === 'production' ? '/cartos-resp/' : '/',
   build: {
     outDir,
     emptyOutDir: true,
