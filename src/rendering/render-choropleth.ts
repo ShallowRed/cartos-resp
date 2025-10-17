@@ -3,7 +3,7 @@ import type { ChoroplethConfig as BaseChoroplethConfig, OverlayMesh, ServiceData
 import * as Plot from '@observablehq/plot'
 import * as d3 from 'd3'
 import * as d3CompositeProjections from 'd3-composite-projections'
-
+import { createFranceProjection } from '@/services/custom-projection'
 // Extended color scale config with internal options
 interface ColorScaleConfig {
   legend?: boolean
@@ -13,6 +13,7 @@ interface ColorScaleConfig {
   domain?: [number, number]
   tickFormat?: (d: number) => string
   percent?: boolean
+  range?: string[]
   _needsDivergingDomain?: boolean
 }
 
@@ -143,7 +144,7 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
         const merged = { ...defaults, ...options.colorScale }
 
         // Extract percent option (custom option, not a Plot option)
-        const { percent, domain, ...plotOptions } = merged
+        const { percent, domain, range, ...plotOptions } = merged
 
         // Create the final config object
         const finalConfig: any = { ...plotOptions }
@@ -163,6 +164,11 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
           finalConfig.tickFormat = (d: number) => `${(d * 100).toFixed(0)}%`
         }
 
+        if (range !== undefined) {
+          finalConfig.range = range
+          delete finalConfig.scheme
+        }
+
         return finalConfig
       })(),
 
@@ -171,7 +177,8 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
 
       // === Map Projection & Dimensions ===
       // D3 projection for transforming coordinates
-      projection: options.projection ?? d3CompositeProjections.geoConicConformalFrance(),
+      projection: createFranceProjection,
+      // projection: options.projection ?? d3CompositeProjections.geoConicConformalFrance(),
       width: options.width ?? 960,
       height: options.height ?? 500,
       inset: options.inset ?? 8,
