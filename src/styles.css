@@ -3,11 +3,12 @@
 
 @plugin "daisyui" {
   /* themes: fantasy --default; */
+  themes: corporate --default;
   /* themes: all; */
   /* themes: light --default, dark --prefersdark; */
 }
 
-
+/* 
 
 @plugin "daisyui/theme" {
   name: "nsp";
@@ -42,7 +43,7 @@
   --border: 1px;
   --depth: 0;
   --noise: 0;
-}
+} */
 
 
 :root {

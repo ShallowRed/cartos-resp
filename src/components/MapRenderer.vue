@@ -27,7 +27,25 @@ watch([mapPlot, mapContainer], ([plot, container]) => {
 <style scoped>
 @import 'tailwindcss';
 
-.map-container:deep(h2) {
-  @apply text-lg font-semibold mb-4;
+.map-container {
+  background: var(--custom-bg);
+}
+
+.map-container:deep(figure) {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-container:deep(figure h2) {
+  @apply ml-18 text-lg font-semibold mb-4;
+
+  width: 48rem;
+  height: 4rem;
+  display: flex;
+  align-items: end;
+}
+
+.map-container:deep(h2+svg) {
+  @apply ml-18;
 }
 </style>

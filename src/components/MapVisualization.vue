@@ -41,16 +41,3 @@ watch([
     </div>
   </div>
 </template>
-
-<style scoped>
-.map-renderer:deep(figure) {
-  display: flex;
-  flex-direction: column;
-}
-.map-renderer:deep(figure h2) {
-  width: 48rem;
-  height: 4rem;
-  display: flex;
-  align-items: end;
-}
-</style>

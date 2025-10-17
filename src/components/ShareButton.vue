@@ -454,7 +454,7 @@ async function downloadPng() {
   <div class="relative w-full">
     <div class="flex flex-col gap-3">
       <button
-        class="btn w-full btn-primary btn-soft gap-2"
+        class="btn w-full btn-soft gap-2"
         :disabled="!mapStore.currentMapId"
         @click="shareMap"
       >
@@ -463,7 +463,7 @@ async function downloadPng() {
       </button>
 
       <button
-        class="btn w-full btn-primary btn-soft gap-2"
+        class="btn w-full btn-soft gap-2"
         :disabled="!mapStore.currentMapId"
         @click="downloadSvg"
       >
@@ -472,7 +472,7 @@ async function downloadPng() {
       </button>
 
       <button
-        class="btn w-full btn-primary btn-soft gap-2"
+        class="btn w-full btn-soft gap-2"
         :disabled="!mapStore.currentMapId"
         @click="downloadPng"
       >
