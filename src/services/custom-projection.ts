@@ -8,9 +8,8 @@
  * Language: JavaScript
  */
 
+import { loadCompositeProjection, registerProjection } from '@atlas-composer/projection-loader'
 import { geoConicConformal, geoMercator } from 'd3-geo'
-// import { loadCompositeProjection, registerProjection } from '@atlas-composer/projection-loader'
-import { loadCompositeProjection, registerProjection } from '/Users/lucaspoulain/Projects/atlas-composer/packages/projection-loader/src/standalone-projection-loader.ts'
 
 export function createFranceProjection() {
   // Step 1: Register projections used in this configuration

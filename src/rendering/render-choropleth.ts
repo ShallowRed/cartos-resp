@@ -2,7 +2,7 @@ import type { Feature, FeatureCollection, Geometry } from 'geojson'
 import type { ChoroplethConfig as BaseChoroplethConfig, OverlayMesh, ServiceDataRow } from '@/types/service.types'
 import * as Plot from '@observablehq/plot'
 import * as d3 from 'd3'
-import * as d3CompositeProjections from 'd3-composite-projections'
+// import * as d3CompositeProjections from 'd3-composite-projections'
 import { createFranceProjection } from '@/services/custom-projection'
 // Extended color scale config with internal options
 interface ColorScaleConfig {

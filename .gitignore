@@ -27,7 +27,6 @@ dist-ssr
 
 coverage
 
-.github
-!.github/workflows
-
 docs/
+
+secrets.env
