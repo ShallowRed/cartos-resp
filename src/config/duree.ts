@@ -5,6 +5,27 @@ export const dureeConfig: ServiceConfig = {
   id: 'duree',
   title: 'Durées d\'accès',
   dataFile: `${import.meta.env.BASE_URL}data/duree.csv`,
+
+  // Preprocessor to expand aggregate DOM code "97" to individual DOM territories
+  dataPreprocessor: (rows) => {
+    const DOM_CODES = ['971', '972', '973', '974', '976']
+    const expandedRows: any[] = []
+
+    for (const row of rows) {
+      if (row.dep === '97') {
+        // Replicate this row for each DOM territory
+        for (const code of DOM_CODES) {
+          expandedRows.push({ ...row, dep: code })
+        }
+      }
+      else {
+        expandedRows.push(row)
+      }
+    }
+
+    return expandedRows
+  },
+
   formControls: [
     {
       key: 'metric',

@@ -69,6 +69,9 @@ export interface ServiceConfig {
   /** Entry definitions for form controls */
   formControls: FormControl[]
 
+  /** Optional data preprocessor to transform rows after loading */
+  dataPreprocessor?: (rows: ServiceDataRow[]) => ServiceDataRow[]
+
   /** Rendering configuration */
   rendering: ServiceRenderConfig
 }

@@ -97,6 +97,7 @@ export interface MapServiceOptions {
   title: string
   dataFile: string
   formControls: FormControl[]
+  dataPreprocessor?: (rows: ServiceDataRow[]) => ServiceDataRow[]
 }
 
 /**

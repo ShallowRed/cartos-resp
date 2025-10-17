@@ -1,0 +1,122 @@
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ CURRENT STATE: How Eloignement Data Flows Through render-choropleth.ts     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────┐         ┌──────────────────────────────┐
+│  eloignement.csv (tabularData)  │         │  departements.json (GeoJSON) │
+│                                 │         │                              │
+│  dep | facility | 5min | ...    │         │  properties: {               │
+│  ----+----------+------+----    │         │    INSEE_DEP: "971",         │
+│  01  | police   | 7.68 | ...    │         │    NOM: "Guadeloupe"         │
+│  02  | police   | 22.9 | ...    │         │  }                           │
+│  ...                            │         │  ---                         │
+│  2A  | police   | 15.6 | ...    │         │  properties: {               │
+│  2B  | police   | 18.2 | ...    │         │    INSEE_DEP: "972",         │
+│  97  | police   | 17.8 | ...  ◄─┐         │    NOM: "Martinique"         │
+│                                 │ │       │  }                           │
+│  (Note: "97" = aggregate DOM)   │ │       │  ---                         │
+└─────────────────────────────────┘ │       │  ... (973, 974, 976)         │
+                                    │       └──────────────────────────────┘
+                                    │                      │
+                    ┌───────────────┘                      │
+                    │  MISMATCH!                           │
+                    │  "97" ≠ "971", "972", ...           │
+                    │                                      │
+                    ▼                                      ▼
+        ┌────────────────────────┐          ┌────────────────────────┐
+        │  buildDataIndex()      │          │  createChoroplethLayer()│
+        │                        │          │                        │
+        │  Map:                  │          │  For each feature:     │
+        │  "01" → {row, value}   │          │    key = "971"         │
+        │  "02" → {row, value}   │          │    lookup("971") ──────┼──► NOT FOUND
+        │  ...                   │          │    → fillUnknown       │    in index!
+        │  "2A" → {row, value}   │          │                        │
+        │  "2B" → {row, value}   │          │    key = "972"         │
+        │  "97" → {row, value} ◄─┼─────┐    │    lookup("972") ──────┼──► NOT FOUND
+        │       (unused!)        │     │    │    → fillUnknown       │
+        └────────────────────────┘     │    └────────────────────────┘
+                                       │                 │
+                                       │                 ▼
+                                       │    ┌────────────────────────┐
+                                       │    │  RESULT ON MAP:        │
+                                       │    │                        │
+                                       │    │  France metro: ✅ Colored│
+                                       │    │  Corsica: ✅ Colored    │
+                                       │    │  DOM (971-976): ❌ Gray │
+                                       │    │                        │
+                                       │    └────────────────────────┘
+                                       │
+                                       └─── Data exists but can't be matched!
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SOLUTION 1: Replicate "97" to Individual DOM Codes                         │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│  dataPreprocessor in config:    │
+│                                 │
+│  if (row.dep === "97") {        │
+│    return [                     │
+│      {...row, dep: "971"},      │
+│      {...row, dep: "972"},      │
+│      {...row, dep: "973"},      │
+│      {...row, dep: "974"},      │
+│      {...row, dep: "976"},      │
+│    ]                            │
+│  }                              │
+└─────────────────────────────────┘
+                 │
+                 ▼
+    ┌────────────────────────┐          ┌────────────────────────┐
+    │  Expanded Data Index   │          │  createChoroplethLayer()│
+    │                        │          │                        │
+    │  Map:                  │          │  For each feature:     │
+    │  "01" → {row, value}   │          │    key = "971"         │
+    │  "02" → {row, value}   │          │    lookup("971") ──────┼──► ✅ FOUND!
+    │  ...                   │          │    → render color      │
+    │  "971" → {row, value} ◄┼──────────┤                        │
+    │  "972" → {row, value} ◄┼──────────┤    key = "972"         │
+    │  "973" → {row, value} ◄┼──────────┤    lookup("972") ──────┼──► ✅ FOUND!
+    │  "974" → {row, value} ◄┼──────────┤    → render color      │
+    │  "976" → {row, value} ◄┼──────────┤                        │
+    │  "2A" → {row, value}   │          │    (all DOM territories │
+    │  "2B" → {row, value}   │          │     show same values)  │
+    └────────────────────────┘          └────────────────────────┘
+                                                     │
+                                                     ▼
+                                        ┌────────────────────────┐
+                                        │  RESULT ON MAP:        │
+                                        │                        │
+                                        │  France metro: ✅       │
+                                        │  Corsica: ✅            │
+                                        │  DOM (971-976): ✅      │
+                                        │  All territories render!│
+                                        └────────────────────────┘
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ VISUAL RESULT COMPARISON                                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+CURRENT STATE (without fix):          WITH SOLUTION 1:
+                                      
+    ┌─────────────────┐                  ┌─────────────────┐
+    │   France Metro  │                  │   France Metro  │
+    │   ███████████   │                  │   ███████████   │
+    │   ███████████   │                  │   ███████████   │
+    └─────────────────┘                  └─────────────────┘
+    
+ ┌───┐  ┌───┐  ┌───┐              ┌───┐  ┌───┐  ┌───┐
+ │ ? │  │ ? │  │ ? │  DOM         │███│  │███│  │███│  DOM
+ └───┘  └───┘  └───┘  (no data)   └───┘  └───┘  └───┘  (aggregate)
+  971    972    973                 971    972    973
+ 
+ ┌───┐  ┌───┐                      ┌───┐  ┌───┐
+ │ ? │  │ ? │                      │███│  │███│
+ └───┘  └───┘                      └───┘  └───┘
+  974    976                        974    976
+
+Legend:
+███ = Colored based on data
+ ?  = Gray (fillUnknown), no data match

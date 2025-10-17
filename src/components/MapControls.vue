@@ -31,8 +31,7 @@ const { currentService } = storeToRefs(mapStore)
     </div>
 
     <!-- Share Button -->
-    <div class="mt-4 pt-4 border-t border-base-300">
-      <ShareButton />
-    </div>
+    <div class="divider" />
+    <ShareButton />
   </fieldset>
 </template>

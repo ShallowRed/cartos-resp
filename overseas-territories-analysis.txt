@@ -1,0 +1,195 @@
+# Overseas Territories Data Analysis
+Generated: 2025-10-17
+
+## Summary
+
+This analysis identifies all overseas territory and Corsica-related entries in the project's CSV data files.
+
+## Department Codes Included
+
+### Overseas Territories (DOM-TOM):
+- **971**: Guadeloupe
+- **972**: Martinique  
+- **973**: Guyane (French Guiana)
+- **974**: La Réunion
+- **976**: Mayotte
+
+### Special Status (Metropolitan):
+- **2A**: Corse-du-Sud (South Corsica)
+- **2B**: Haute-Corse (Upper Corsica)
+
+### Aggregate Code:
+- **97**: Used in some datasets as aggregate for DOM-TOM
+
+## Detailed Breakdown by Dataset
+
+### 1. couverture.csv
+- **Total lines**: 3,468
+- **Overseas entries**: 238 (6.9%)
+
+Breakdown by department:
+- 971 (Guadeloupe): 34 entries
+- 972 (Martinique): 34 entries
+- 973 (Guyane): 34 entries
+- 974 (La Réunion): 34 entries
+- 976 (Mayotte): 34 entries
+- 2A (Corse-du-Sud): 34 entries
+- 2B (Haute-Corse): 34 entries
+
+**Structure**: Each of the 7 territories has 34 facility types (matching the ~35 unique facility types in dataset)
+
+### 2. duree.csv
+- **Total lines**: 5,837
+- **Overseas entries**: 166 (2.8%)
+
+Breakdown by department:
+- 2A (Corse-du-Sud): 56 entries
+- 2B (Haute-Corse): 56 entries
+- 97 (DOM-TOM aggregate): 54 entries
+
+**Note**: Uses aggregate code "97" for overseas territories instead of individual codes
+
+### 3. eloignement.csv
+- **Total lines**: 2,930
+- **Overseas entries**: 83 (2.8%)
+
+Breakdown by department:
+- 2A (Corse-du-Sud): 28 entries
+- 2B (Haute-Corse): 28 entries
+- 97 (DOM-TOM aggregate): 27 entries
+
+**Note**: Also uses aggregate code "97" for overseas territories
+
+### 4. evolution.csv
+- **Total lines**: 988
+- **Overseas entries**: 65 (6.6%)
+
+Breakdown by department:
+- 2A (Corse-du-Sud): 10 entries
+- 2B (Haute-Corse): 10 entries
+- 971 (Guadeloupe): 9 entries
+- 972 (Martinique): 9 entries
+- 973 (Guyane): 9 entries
+- 974 (La Réunion): 9 entries
+- 976 (Mayotte): 9 entries
+
+**Structure**: Each territory has ~9-10 facility types (matching the 11 unique facility types in dataset)
+
+## Total Overseas-Related Entries: 552
+
+### By Territory Type:
+- **Corsica (2A + 2B)**: 262 entries total
+- **DOM (971-974, 976)**: 233 entries total
+- **Aggregate (97)**: 81 entries total (alternative representation in 2 datasets)
+
+## Geographic Coverage Notes
+
+### Missing Overseas Territories:
+The following French overseas territories are NOT represented in the data:
+- 975: Saint-Pierre-et-Miquelon
+- 977: Saint-Barthélemy
+- 978: Saint-Martin
+- 986: Wallis-et-Futuna
+- 987: Polynésie française (French Polynesia)
+- 988: Nouvelle-Calédonie (New Caledonia)
+
+### Data Representation Strategy:
+- **couverture.csv** & **evolution.csv**: Individual DOM codes (971-976)
+- **duree.csv** & **eloignement.csv**: Aggregate code (97) for all DOM-TOM
+- **All datasets**: Individual codes for Corsica (2A, 2B)
+
+## Implications for Map Visualization
+
+The application uses **@atlas-composer/projection-loader** (v1.1.0-rc.10) with a composite projection configuration that positions all French territories on a single canvas.
+
+### Geographic Data Coverage
+The `departements.json` TopoJSON file contains **101 total geometries**, including:
+- **7 overseas/special territories**: 971, 972, 973, 974, 976, 2A, 2B
+- Matches the territories in the data (except territories using aggregate code "97")
+
+### Projection Configuration (`projection-preset.ts`)
+The composite projection includes **14 territories**:
+- **FR-MET**: France Métropolitaine (primary, conic conformal projection)
+- **FR-GP**: Guadeloupe (971)
+- **FR-MQ**: Martinique (972)
+- **FR-GF**: Guyane (973)
+- **FR-RE**: La Réunion (974)
+- **FR-YT**: Mayotte (976)
+- **FR-BL**: Saint-Barthélemy (977) - *in projection but not in data*
+- **FR-MF**: Saint-Martin (978) - *in projection but not in data*
+- **FR-PM**: Saint-Pierre-et-Miquelon (975) - *in projection but not in data*
+- **FR-WF**: Wallis-et-Futuna (986) - *in projection but not in data*
+- **FR-PF**: Polynésie française (987) - *in projection but not in data*
+- **FR-PF-2**: Polynésie française (îles éloignées) - *in projection but not in data*
+- **FR-NC**: Nouvelle-Calédonie (988) - *in projection but not in data*
+- **FR-TF**: Terres australes et antarctiques françaises - *in projection but not in data*
+
+### Territory Positioning
+Each secondary territory is positioned at specific canvas offsets with clipping extents:
+- Caribbean territories (GP, MQ, MF, BL, PM): Left side of canvas
+- Indian Ocean (RE, YT): Right side of canvas  
+- Pacific territories (WF, PF, NC): Right side/bottom of canvas
+- Reference scale: 2700, Canvas: 960×500px
+
+### Data-Geography Alignment Issues
+
+**Perfectly Aligned:**
+- Metropolitan France (FR-MET)
+- Corsica (2A, 2B) - included in metropolitan projection bounds
+- 5 DOM territories (971-974, 976) - have both geography AND data
+
+**Geography Available, No Data:**
+- Saint-Barthélemy (977), Saint-Martin (978), Saint-Pierre-et-Miquelon (975)
+- Wallis-et-Futuna (986), Polynésie française (987), Nouvelle-Calédonie (988)
+- These territories appear in projection config but have no corresponding CSV data
+
+**Data Available, Geography Missing:**
+- Aggregate code "97" in duree.csv and eloignement.csv
+- Cannot be mapped to specific geometries (represents combined DOM)
+
+### Rendering Capability
+✅ **Ready to visualize**: 
+- Metropolitan France + Corsica (96 departments)
+- 5 DOM territories with full data (971-974, 976)
+- **Total: 101 territories can be rendered on the composite projection**
+
+⚠️ **Data handling needed**:
+- Filter or aggregate "97" entries in duree/eloignement datasets
+- 7 territories in projection have no data to display
+
+## Data Quality Notes
+
+- Overseas entries in couverture.csv appear to have missing or zero population data (empty fields)
+- Consistent facility type coverage across territories within each dataset
+- The use of aggregate code "97" in 2 of 4 datasets creates inconsistency in data representation
+
+## Recommendations
+
+### For Immediate Use
+1. **Current visualization should work** with the composite projection for:
+   - All 4 datasets can render metropolitan France + Corsica (96 depts)
+   - `couverture.csv` and `evolution.csv` can additionally render 5 DOM territories
+   
+2. **Handle aggregate code "97"** in duree/eloignement datasets:
+   - Option A: Map "97" to all 5 DOM territories (replicate data)
+   - Option B: Create special UI to show "97" data separately
+   - Option C: Filter out "97" and only show metropolitan France + Corsica
+
+3. **Add territory filtering** in MapService to exclude departments without geometry:
+   ```typescript
+   const AVAILABLE_GEOMETRIES = ['2A', '2B', '971', '972', '973', '974', '976']
+   // Filter data rows to only include departments with available geometry
+   ```
+
+### For Future Enhancement
+1. **Acquire geographic data** for missing territories (977, 978, 975, 986, 987, 988)
+2. **Standardize data representation**: Replace "97" aggregate with individual codes
+3. **Add facility data** for territories that have projection but no data
+4. **Consider hiding territories** in projection config that have no data (set display: false)
+
+### Testing Checklist
+- [ ] Verify all 5 DOM territories render correctly on composite projection
+- [ ] Test that Corsica (2A, 2B) renders in correct position
+- [ ] Handle missing data gracefully for departments without CSV entries
+- [ ] Test behavior with "97" aggregate code in duree/eloignement
+- [ ] Verify projection scale and positioning matches expected layout

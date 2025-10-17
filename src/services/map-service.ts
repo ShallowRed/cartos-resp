@@ -9,15 +9,18 @@ export default class MapService {
   formControls: FormControl[]
   selectedFormControls: Map<string, string> = new Map() // key: entry key, value: selected entry key
   version = ref(0) // Reactive trigger for UI updates
+  dataPreprocessor?: (rows: ServiceDataRow[]) => ServiceDataRow[]
 
   constructor({
     title,
     dataFile,
     formControls,
+    dataPreprocessor,
   }: MapServiceOptions) {
     this.title = title
     this.dataFile = dataFile
     this.formControls = formControls
+    this.dataPreprocessor = dataPreprocessor
     for (const control of this.formControls) {
       if (control.entries?.[0] != null) {
         this.selectedFormControls.set(control.key, control.entries[0].key)
@@ -26,7 +29,14 @@ export default class MapService {
   }
 
   async loadData(): Promise<void> {
-    this.data = await loadCachedCSVData(this.dataFile)
+    let data = await loadCachedCSVData(this.dataFile)
+
+    // Apply data preprocessor if provided
+    if (this.dataPreprocessor) {
+      data = this.dataPreprocessor(data)
+    }
+
+    this.data = data
   }
 
   getSelectedEntry(entryKey: string): string | undefined {

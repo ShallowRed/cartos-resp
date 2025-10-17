@@ -15,6 +15,7 @@ export class ServiceFactory {
       title: config.title,
       dataFile: config.dataFile,
       formControls: config.formControls,
+      dataPreprocessor: config.dataPreprocessor,
     })
   }
 
