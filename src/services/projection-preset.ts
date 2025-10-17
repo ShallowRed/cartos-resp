@@ -3,13 +3,13 @@ export const config = {
   metadata: {
     atlasId: 'france',
     atlasName: 'France',
-    exportDate: '2025-10-17T19:22:35.492Z',
+    exportDate: '2025-10-17T21:04:33.403Z',
     createdWith: 'Atlas composer v1.0',
   },
   pattern: 'single-focus',
   referenceScale: 2700,
   canvasDimensions: {
-    width: 960,
+    width: 750,
     height: 500,
   },
   territories: [
@@ -36,11 +36,11 @@ export const config = {
       },
       layout: {
         translateOffset: [
-          0,
+          100,
           0,
         ],
         pixelClipExtent: [
-          -268.92,
+          -301,
           -245.16,
           260.99,
           324,
@@ -69,20 +69,24 @@ export const config = {
             -61.46,
             16.14,
           ],
-          scaleMultiplier: 1.4,
+          parallels: [
+            12,
+            60,
+          ],
+          scaleMultiplier: 1,
           projectionId: 'mercator',
         },
       },
       layout: {
         translateOffset: [
-          -324,
-          -38,
+          -295,
+          -65,
         ],
         pixelClipExtent: [
-          -54,
-          -48,
-          55,
-          38,
+          -40,
+          -40,
+          40,
+          40,
         ],
       },
       bounds: [
@@ -108,20 +112,20 @@ export const config = {
             -61.03,
             14.67,
           ],
-          scaleMultiplier: 1.6,
+          scaleMultiplier: 1,
           projectionId: 'mercator',
         },
       },
       layout: {
         translateOffset: [
-          -324,
-          35,
+          -215,
+          -65,
         ],
         pixelClipExtent: [
-          -54,
-          -35,
-          55,
-          43,
+          -40,
+          -40,
+          40,
+          40,
         ],
       },
       bounds: [
@@ -147,20 +151,20 @@ export const config = {
             -53.2,
             3.9,
           ],
-          scaleMultiplier: 0.6,
+          scaleMultiplier: 1,
           projectionId: 'mercator',
         },
       },
       layout: {
         translateOffset: [
-          -324,
-          155,
+          -255,
+          70,
         ],
         pixelClipExtent: [
-          -54,
-          -76.7,
-          55.08,
-          78.28,
+          -80,
+          -95,
+          80,
+          90,
         ],
       },
       bounds: [
@@ -186,20 +190,20 @@ export const config = {
             55.52,
             -21.13,
           ],
-          scaleMultiplier: 1.2,
+          scaleMultiplier: 1,
           projectionId: 'mercator',
         },
       },
       layout: {
         translateOffset: [
-          313,
-          -96,
+          -295,
+          -145,
         ],
         pixelClipExtent: [
-          -52,
-          -44,
-          57,
-          42,
+          -40,
+          -40,
+          40,
+          40,
         ],
       },
       bounds: [
@@ -225,20 +229,20 @@ export const config = {
             45.16,
             -12.8,
           ],
-          scaleMultiplier: 1.6,
+          scaleMultiplier: 1,
           projectionId: 'mercator',
         },
       },
       layout: {
         translateOffset: [
-          316,
-          -173,
+          -215,
+          -145,
         ],
         pixelClipExtent: [
-          -54.91,
-          -32.2,
-          54.17,
-          32.6,
+          -40,
+          -40,
+          40,
+          40,
         ],
       },
       bounds: [
@@ -274,10 +278,10 @@ export const config = {
           -119,
         ],
         pixelClipExtent: [
-          -378,
-          -140.4,
-          -269.016,
-          -86.4,
+          -54,
+          -27,
+          55,
+          27,
         ],
       },
       bounds: [
@@ -298,26 +302,14 @@ export const config = {
       projection: {
         id: 'mercator',
         family: 'CYLINDRICAL',
-        parameters: {
-          center: [
-            -63.082,
-            18.067,
-          ],
-          scaleMultiplier: 5,
-          projectionId: 'mercator',
-        },
+        parameters: {},
       },
       layout: {
         translateOffset: [
           -324,
           -119,
         ],
-        pixelClipExtent: [
-          -54,
-          -21,
-          55,
-          33,
-        ],
+        pixelClipExtent: null,
       },
       bounds: [
         [
@@ -337,26 +329,14 @@ export const config = {
       projection: {
         id: 'mercator',
         family: 'CYLINDRICAL',
-        parameters: {
-          center: [
-            -56.23,
-            46.93,
-          ],
-          scaleMultiplier: 1.3,
-          projectionId: 'mercator',
-        },
+        parameters: {},
       },
       layout: {
         translateOffset: [
           -324,
           -176,
         ],
-        pixelClipExtent: [
-          -54,
-          -29,
-          55,
-          36,
-        ],
+        pixelClipExtent: null,
       },
       bounds: [
         [
@@ -376,26 +356,14 @@ export const config = {
       projection: {
         id: 'mercator',
         family: 'CYLINDRICAL',
-        parameters: {
-          center: [
-            -178.1,
-            -14.3,
-          ],
-          scaleMultiplier: 2.7,
-          projectionId: 'mercator',
-        },
+        parameters: {},
       },
       layout: {
         translateOffset: [
           313,
           59,
         ],
-        pixelClipExtent: [
-          -52,
-          -27,
-          57,
-          30,
-        ],
+        pixelClipExtent: null,
       },
       bounds: [
         [
@@ -415,26 +383,14 @@ export const config = {
       projection: {
         id: 'mercator',
         family: 'CYLINDRICAL',
-        parameters: {
-          center: [
-            -150.55,
-            -17.11,
-          ],
-          scaleMultiplier: 0.5,
-          projectionId: 'mercator',
-        },
+        parameters: {},
       },
       layout: {
         translateOffset: [
           311,
           203,
         ],
-        pixelClipExtent: [
-          -50,
-          -41,
-          59,
-          30,
-        ],
+        pixelClipExtent: null,
       },
       bounds: [
         [
@@ -454,26 +410,14 @@ export const config = {
       projection: {
         id: 'mercator',
         family: 'CYLINDRICAL',
-        parameters: {
-          center: [
-            -150.55,
-            -17.11,
-          ],
-          scaleMultiplier: 0.06,
-          projectionId: 'mercator',
-        },
+        parameters: {},
       },
       layout: {
         translateOffset: [
           297,
           122,
         ],
-        pixelClipExtent: [
-          -36,
-          -33,
-          73,
-          40,
-        ],
+        pixelClipExtent: null,
       },
       bounds: [
         [
@@ -493,26 +437,14 @@ export const config = {
       projection: {
         id: 'mercator',
         family: 'CYLINDRICAL',
-        parameters: {
-          center: [
-            165.8,
-            -21.07,
-          ],
-          scaleMultiplier: 0.3,
-          projectionId: 'mercator',
-        },
+        parameters: {},
       },
       layout: {
         translateOffset: [
           313,
           -13,
         ],
-        pixelClipExtent: [
-          -52,
-          -41,
-          57,
-          45.4,
-        ],
+        pixelClipExtent: null,
       },
       bounds: [
         [
@@ -532,26 +464,14 @@ export const config = {
       projection: {
         id: 'mercator',
         family: 'CYLINDRICAL',
-        parameters: {
-          center: [
-            69.348,
-            -49.28,
-          ],
-          scaleMultiplier: 1,
-          projectionId: 'mercator',
-        },
+        parameters: {},
       },
       layout: {
         translateOffset: [
           0,
           250,
         ],
-        pixelClipExtent: [
-          0,
-          -250,
-          0,
-          -250,
-        ],
+        pixelClipExtent: null,
       },
       bounds: [
         [
