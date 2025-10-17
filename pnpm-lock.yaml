@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@atlas-composer/projection-loader':
-        specifier: 1.1.0-rc.9
-        version: 1.1.0-rc.9(d3-geo-projection@4.0.0)(d3-geo@3.1.1)
+        specifier: 1.1.0-rc.10
+        version: 1.1.0-rc.10(d3-geo-projection@4.0.0)(d3-geo@3.1.1)
       '@observablehq/plot':
         specifier: ^0.6.17
         version: 0.6.17
@@ -173,8 +173,8 @@ packages:
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
 
-  '@atlas-composer/projection-loader@1.1.0-rc.9':
-    resolution: {integrity: sha512-vokMzg4qYLqMmY1KeECJCB3cwVtxugG6Mnt210BCc9w6Y+eH81HKta0kaKcl26JytLljySB4h3hpJUxzMB6gYg==}
+  '@atlas-composer/projection-loader@1.1.0-rc.10':
+    resolution: {integrity: sha512-3gxgwVkKfx+8is9/g1J7zjKJgAajWdoI9nEpTN2UIjv8HQCgqejpfYZYeb4G0b0stfU+74YshAJGnQaaCoFYMg==}
     peerDependencies:
       d3-geo: '>=3.0.0'
       d3-geo-projection: '>=4.0.0'
@@ -2672,7 +2672,7 @@ snapshots:
       package-manager-detector: 1.4.1
       tinyexec: 1.0.1
 
-  '@atlas-composer/projection-loader@1.1.0-rc.9(d3-geo-projection@4.0.0)(d3-geo@3.1.1)':
+  '@atlas-composer/projection-loader@1.1.0-rc.10(d3-geo-projection@4.0.0)(d3-geo@3.1.1)':
     dependencies:
       d3-geo: 3.1.1
     optionalDependencies:
