@@ -13,26 +13,27 @@ export const eloignementConfig: ServiceConfig = {
   id: 'eloignement',
   title: 'Éloignements des populations',
   dataFile: `${import.meta.env.BASE_URL}data/eloignement.csv`,
-  
+
   // Add a data preprocessor that expands "97" to individual DOM codes
   dataPreprocessor: (rows) => {
     const DOM_CODES = ['971', '972', '973', '974', '976']
     const expandedRows: ServiceDataRow[] = []
-    
+
     for (const row of rows) {
       if (row.dep === '97') {
         // Replicate this row for each DOM territory
         for (const code of DOM_CODES) {
           expandedRows.push({ ...row, dep: code })
         }
-      } else {
+      }
+      else {
         expandedRows.push(row)
       }
     }
-    
+
     return expandedRows
   },
-  
+
   formControls: [
     // ... rest of config
   ],
@@ -91,14 +92,14 @@ function buildDataIndex(config: ChoroplethConfig): Map<string, DataIndexEntry> {
 }
 
 // Modify lookup in createChoroplethLayer:
-const getFillColor = (feature: Feature<Geometry>) => {
+function getFillColor(feature: Feature<Geometry>) {
   let key = normalizeKey(config.featureKey(feature))
-  
+
   // Apply custom key mapper if provided
   if (config.dataKeys?.keyMapper) {
     key = config.dataKeys.keyMapper(key)
   }
-  
+
   const data = dataIndex.get(key)
   return data?.value ?? null
 }
@@ -124,10 +125,10 @@ export const eloignementConfig: ServiceConfig = {
   id: 'eloignement',
   title: 'Éloignements des populations (France métropolitaine)',
   dataFile: `${import.meta.env.BASE_URL}data/eloignement.csv`,
-  
+
   rendering: {
     // ... other config
-    
+
     // Add feature filter to exclude DOM territories
     featureFilter: (feature) => {
       const code = feature.properties?.INSEE_DEP
@@ -187,42 +188,43 @@ export const eloignementConfig: ServiceConfig = {
   id: 'eloignement',
   title: 'Éloignements des populations',
   dataFile: `${import.meta.env.BASE_URL}data/eloignement.csv`,
-  
+
   dataPreprocessor: (rows) => {
     const DOM_CODES = ['971', '972', '973', '974', '976']
     const expandedRows: ServiceDataRow[] = []
-    
+
     for (const row of rows) {
       if (row.dep === '97') {
         for (const code of DOM_CODES) {
-          expandedRows.push({ 
-            ...row, 
+          expandedRows.push({
+            ...row,
             dep: code,
-            _isAggregate: true  // Flag for UI
+            _isAggregate: true // Flag for UI
           })
         }
-      } else {
+      }
+      else {
         expandedRows.push(row)
       }
     }
-    
+
     return expandedRows
   },
-  
+
   rendering: {
     // ... other config
-    
+
     // Custom tooltip to indicate aggregate data
     tooltip: {
       template: 'custom',
       builder: (feature, value, row) => {
         const name = feature.properties?.NOM || ''
         const displayValue = value != null ? `${(value * 100).toFixed(1)}%` : '—'
-        
+
         if (row?._isAggregate) {
           return `${name}\n${displayValue}\n(données agrégées DOM-TOM)`
         }
-        
+
         return `${name}\n${displayValue}`
       }
     }
@@ -258,7 +260,7 @@ Implement **Solution 1** because:
 ### Quick Test:
 After implementation, verify:
 - [ ] Metropolitan France renders correctly
-- [ ] Corsica (2A, 2B) renders correctly  
+- [ ] Corsica (2A, 2B) renders correctly
 - [ ] All 5 DOM territories show the same color (from "97" data)
 - [ ] Tooltips show values for all territories
 - [ ] No console errors about missing data
