@@ -76,6 +76,10 @@ async function downloadSvg() {
     const combinedSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     combinedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
 
+    // Get the computed outline color from the figure element early
+    // This is the darkest color from the active palette
+    const computedColor = window.getComputedStyle(figureElement).color || '#222'
+
     // Calculate dimensions and layout
     let totalWidth = 0
     let totalHeight = 0
@@ -84,12 +88,12 @@ async function downloadSvg() {
     // Add title as text element if it exists
     if (titleElement && titleElement.textContent?.trim()) {
       const titleText = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-      titleText.setAttribute('x', '20')
+      titleText.setAttribute('x', '0')
       titleText.setAttribute('y', '30')
       titleText.setAttribute('font-family', 'Arial, sans-serif')
-      titleText.setAttribute('font-size', '18')
+      titleText.setAttribute('font-size', '24')
       titleText.setAttribute('font-weight', 'bold')
-      titleText.setAttribute('fill', '#333')
+      titleText.setAttribute('fill', computedColor)
       titleText.textContent = titleElement.textContent.trim()
       combinedSvg.appendChild(titleText)
       currentY = 50
@@ -99,6 +103,68 @@ async function downloadSvg() {
     // Add each SVG as a group
     svgElements.forEach((svg) => {
       const svgClone = svg.cloneNode(true) as SVGElement
+
+      // Remove tooltip centroid dots from export
+      // Observable Plot renders these as circles in a group
+      const circles = svgClone.querySelectorAll('circle')
+      circles.forEach((circle) => {
+        circle.remove()
+      })
+
+      // Replace currentColor with actual color value in attributes
+      const elementsWithCurrentColor = svgClone.querySelectorAll('[color="currentColor"], [fill="currentColor"], [stroke="currentColor"]')
+      elementsWithCurrentColor.forEach((element) => {
+        if (element.getAttribute('color') === 'currentColor') {
+          element.setAttribute('color', computedColor)
+        }
+        if (element.getAttribute('fill') === 'currentColor') {
+          element.setAttribute('fill', computedColor)
+        }
+        if (element.getAttribute('stroke') === 'currentColor') {
+          element.setAttribute('stroke', computedColor)
+        }
+      })
+
+      // Also replace currentColor in inline styles (for title text)
+      const allElements = svgClone.querySelectorAll('*')
+      allElements.forEach((element) => {
+        if (element instanceof SVGElement || element instanceof HTMLElement) {
+          const style = element.getAttribute('style')
+          if (style) {
+            let updatedStyle = style
+
+            // Replace currentColor with actual color
+            if (style.includes('currentColor')) {
+              updatedStyle = updatedStyle.replace(/currentColor/g, computedColor)
+            }
+
+            // Replace Poppins or any custom font with sans-serif
+            if (style.includes('font-family')) {
+              updatedStyle = updatedStyle.replace(/font-family:[^;]+/g, 'font-family: Arial, sans-serif')
+            }
+
+            if (updatedStyle !== style) {
+              element.setAttribute('style', updatedStyle)
+            }
+          }
+        }
+
+        // For text elements without explicit fill, set it explicitly to use palette color
+        if (element.tagName === 'text' || element.tagName === 'tspan') {
+          const fill = element.getAttribute('fill')
+          // If no fill attribute or it's currentColor, set it explicitly
+          if (!fill || fill === 'currentColor') {
+            element.setAttribute('fill', computedColor)
+          }
+
+          // Ensure all text uses sans-serif font for better compatibility
+          const fontFamily = element.getAttribute('font-family')
+          if (!fontFamily || fontFamily.includes('Poppins')) {
+            element.setAttribute('font-family', 'Arial, sans-serif')
+          }
+        }
+      })
+
       const svgWidth = Number.parseFloat(svgClone.getAttribute('width') || '0')
       const svgHeight = Number.parseFloat(svgClone.getAttribute('height') || '0')
 
@@ -200,6 +266,10 @@ async function downloadPng() {
     const combinedSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     combinedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
 
+    // Get the computed outline color from the figure element early
+    // This is the darkest color from the active palette
+    const computedColor = window.getComputedStyle(figureElement).color || '#222'
+
     // Calculate dimensions and layout
     let totalWidth = 0
     let totalHeight = 0
@@ -208,12 +278,12 @@ async function downloadPng() {
     // Add title as text element if it exists
     if (titleElement && titleElement.textContent?.trim()) {
       const titleText = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-      titleText.setAttribute('x', '20')
+      titleText.setAttribute('x', '0')
       titleText.setAttribute('y', '30')
       titleText.setAttribute('font-family', 'Arial, sans-serif')
       titleText.setAttribute('font-size', '18')
       titleText.setAttribute('font-weight', 'bold')
-      titleText.setAttribute('fill', '#333')
+      titleText.setAttribute('fill', computedColor)
       titleText.textContent = titleElement.textContent.trim()
       combinedSvg.appendChild(titleText)
       currentY = 50
@@ -223,6 +293,66 @@ async function downloadPng() {
     // Add each SVG as a group
     svgElements.forEach((svg) => {
       const svgClone = svg.cloneNode(true) as SVGElement
+
+      // Remove tooltip centroid dots from export
+      // These are circles with r="15" and fill="transparent"
+      const centroidDots = svgClone.querySelectorAll('circle[r="15"][fill="transparent"]')
+      centroidDots.forEach(dot => dot.remove())
+
+      // Replace currentColor with actual color value in attributes
+      const elementsWithCurrentColor = svgClone.querySelectorAll('[color="currentColor"], [fill="currentColor"], [stroke="currentColor"]')
+      elementsWithCurrentColor.forEach((element) => {
+        if (element.getAttribute('color') === 'currentColor') {
+          element.setAttribute('color', computedColor)
+        }
+        if (element.getAttribute('fill') === 'currentColor') {
+          element.setAttribute('fill', computedColor)
+        }
+        if (element.getAttribute('stroke') === 'currentColor') {
+          element.setAttribute('stroke', computedColor)
+        }
+      })
+
+      // Also replace currentColor in inline styles (for title text)
+      const allElements = svgClone.querySelectorAll('*')
+      allElements.forEach((element) => {
+        if (element instanceof SVGElement || element instanceof HTMLElement) {
+          const style = element.getAttribute('style')
+          if (style) {
+            let updatedStyle = style
+
+            // Replace currentColor with actual color
+            if (style.includes('currentColor')) {
+              updatedStyle = updatedStyle.replace(/currentColor/g, computedColor)
+            }
+
+            // Replace Poppins or any custom font with sans-serif
+            if (style.includes('font-family')) {
+              updatedStyle = updatedStyle.replace(/font-family:[^;]+/g, 'font-family: Arial, sans-serif')
+            }
+
+            if (updatedStyle !== style) {
+              element.setAttribute('style', updatedStyle)
+            }
+          }
+        }
+
+        // For text elements without explicit fill, set it explicitly to use palette color
+        if (element.tagName === 'text' || element.tagName === 'tspan') {
+          const fill = element.getAttribute('fill')
+          // If no fill attribute or it's currentColor, set it explicitly
+          if (!fill || fill === 'currentColor') {
+            element.setAttribute('fill', computedColor)
+          }
+
+          // Ensure all text uses sans-serif font for better compatibility
+          const fontFamily = element.getAttribute('font-family')
+          if (!fontFamily || fontFamily.includes('Poppins')) {
+            element.setAttribute('font-family', 'Arial, sans-serif')
+          }
+        }
+      })
+
       const svgWidth = Number.parseFloat(svgClone.getAttribute('width') || '0')
       const svgHeight = Number.parseFloat(svgClone.getAttribute('height') || '0')
 

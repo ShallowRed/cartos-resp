@@ -11,23 +11,9 @@ function simplifyTopojson(data: any, quantile: number = 0.01): any {
   return simplifiedData
 }
 
-function getAggregatedFeature(
-  geometries: any[],
-  getGroupId: (geometry: any) => string,
-  getGroupFeature: (group: any[]) => any,
-): any {
-  // Map<string, Feature>
-  const featuresByRegion = d3.rollup(geometries, getGroupFeature, getGroupId)
-
-  return {
-    type: 'FeatureCollection',
-    features: Array.from(featuresByRegion.values()),
-  }
-}
-
 export async function loadDepartementsData(): Promise<GeoDataResult> {
   const rawData = await d3.json(`${import.meta.env.BASE_URL}data/departements.json`)
-  const departementsData = simplifyTopojson(rawData, 0.2)
+  const departementsData = simplifyTopojson(rawData, 0.075)
 
   const departementsFeatures = topojson.feature(departementsData, departementsData.objects['departements-light'])
 
@@ -38,25 +24,22 @@ export async function loadDepartementsData(): Promise<GeoDataResult> {
   const departementsOuterMesh = topojson.mesh(departementsData, departementsData.objects['departements-light'], (a: any, b: any) => a === b)
 
   const regionCodeKey = 'INSEE_REG'
-  const getGroupId = (d: any) => d.properties[regionCodeKey]
-  const aggregatedRegionsFeatures = getAggregatedFeature(
-    departementsData.objects['departements-light'].geometries,
-    getGroupId,
-    (group: any[]) => ({
-      type: 'Feature',
-      properties: { regionCode: getGroupId(group[0]) },
-      geometry: topojson.merge(departementsData, group),
-    }),
+
+  // const departementsRegionMesh = topojson.mesh(departementsData, aggregatedRegionsFeatures.features)
+
+  const departementsRegionMesh = topojson.mesh(
+    departementsData,
+    departementsData.objects['departements-light'],
+    (a: any, b: any) => {
+      return a.properties[regionCodeKey] !== b.properties[regionCodeKey]
+    },
   )
-
-  const departementsRegionMesh = topojson.mesh(departementsData, aggregatedRegionsFeatures.features)
-
   return {
     featureCollection: departementsFeatures as any,
     backgroundGeometry: departementsOuterMesh,
     overlayMeshes: [
-      { geo: departementsInnerMesh, stroke: '#bbb', strokeWidth: 1 },
-      { geo: departementsRegionMesh, stroke: '#777', strokeWidth: 1 },
+      { geo: departementsInnerMesh, strokeWidth: 0.5 },
+      { geo: departementsRegionMesh, strokeWidth: 1 },
     ],
     outlineGeometry: departementsOuterMesh,
   }

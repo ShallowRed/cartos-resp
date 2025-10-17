@@ -33,6 +33,7 @@ interface ChoroplethConfig extends Omit<BaseChoroplethConfig, 'colorScale' | 'ro
   rowFilter: ((row: ServiceDataRow) => boolean) | null
   outlineStroke: string
   outlineStrokeWidth: number
+  includeTooltips: boolean
 }
 
 interface DataIndexEntry {
@@ -94,6 +95,10 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
 
   // ========== POST-PROCESSING ==========
   addCompositionBorders(chart, config.projection)
+
+  // Set currentColor to match the outline color (darkest from palette)
+  // This makes Plot's legend and title text use the scale's color
+  setCurrentColor(chart, config.outlineStroke)
 
   return chart
 
@@ -211,6 +216,9 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
 
       // === Chart Title ===
       plotTitle: options.plotTitle ?? null,
+
+      // === Export Options ===
+      includeTooltips: options.includeTooltips ?? true,
     }
   }
 
@@ -288,11 +296,11 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
         // Layer 3: Optional overlay meshes (borders, grids)
         ...createOverlayLayers(config),
 
-        // Layer 4: Optional outline
+        // Layer 4: Optional outline - ON TOP (colored with scale)
         ...createOutlineLayer(config),
 
-        // Layer 5: Invisible centroid points for tooltips
-        ...createTooltipLayer(config, centroidPoints),
+        // Layer 5: Invisible centroid points for tooltips (only for interactive view)
+        ...(config.includeTooltips ? createTooltipLayer(config, centroidPoints) : []),
       ],
     })
   }
@@ -324,13 +332,14 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
       return data?.value ?? null
     }
 
-    // Base layer: colored regions
+    // Base layer: colored regions with thin department borders
+    // Using the same color as the outer outline but thinner
     return [
       Plot.geo(config.featureCollection, {
         fill: getFillColor,
-        stroke: 'white',
-        strokeWidth: 0.5,
-        strokeOpacity: 0.3,
+        stroke: config.outlineStroke,
+        strokeWidth: config.outlineStrokeWidth * 0.3,
+        strokeOpacity: 0.5,
       }),
     ]
   }
@@ -340,12 +349,15 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
    * Used for borders, grids, or other decorative elements.
    */
   function createOverlayLayers(config: ChoroplethConfig) {
-    return (config.overlayMeshes || []).map(({ geo, ...styleProps }: OverlayMesh) =>
-      Plot.geo(geo, {
-        pointerEvents: 'none',
-        ...styleProps,
-      }),
-    )
+    return (config.overlayMeshes || [])
+      .map(({ geo, stroke, ...styleProps }: OverlayMesh) =>
+        Plot.geo(geo, {
+          pointerEvents: 'none',
+          // Use the outline color if no stroke is specified
+          stroke: stroke ?? config.outlineStroke,
+          ...styleProps,
+        }),
+      )
   }
 
   /**
@@ -409,6 +421,17 @@ export function renderChoropleth(options: Partial<ChoroplethConfig> = {}) {
       .attr('stroke', '#ddd')
       .attr('stroke-width', 1)
       .attr('pointer-events', 'none')
+  }
+
+  /**
+   * Post-processing: Sets the CSS currentColor to match the outline color.
+   * This makes Observable Plot's legend and title text use the scale's dark color.
+   */
+  function setCurrentColor(chart: any, color: string) {
+    // Set the color style on the figure or SVG element
+    if (chart instanceof HTMLElement) {
+      chart.style.color = color
+    }
   }
 
   // ========== UTILITY FUNCTIONS ==========

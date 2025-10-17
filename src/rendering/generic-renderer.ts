@@ -44,12 +44,7 @@ export function createServiceRenderer(config: ServiceConfig): MapRenderer {
       : selectedSchemeKey
 
     const palette = customRange ?? getPaletteForScheme(resolvedScheme)
-    const fallbackOutline = palette?.[palette.length - 1] ?? '#222'
-    const outlineStrokeValue = `var(--choropleth-outline-color, ${fallbackOutline})`
-
-    if (typeof document !== 'undefined') {
-      document.documentElement.style.setProperty('--choropleth-outline-color', fallbackOutline)
-    }
+    const outlineStrokeValue = palette?.[palette.length - 1] ?? '#222'
 
     // Generate title
     const titleTemplate = renderConfig.titleTemplates[metricKey]
@@ -119,6 +114,7 @@ export function createServiceRenderer(config: ServiceConfig): MapRenderer {
       overlayMeshes: geoData.overlayMeshes,
       outlineGeometry: geoData.outlineGeometry,
       outlineStroke: outlineStrokeValue,
+      outlineStrokeWidth: 1.25,
       titleBuilder,
     })
   }

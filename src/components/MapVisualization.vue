@@ -33,7 +33,7 @@ watch([
     >
       <MapRenderer
         v-if="mapPlot"
-        class="flex-1 flex justify-center items-center min-h-[300px]"
+        class="map-renderer flex-1 flex justify-center items-end min-h-[300px]"
         :map-plot="mapPlot"
       />
       <div class="divider md:divider-horizontal" />
@@ -41,3 +41,16 @@ watch([
     </div>
   </div>
 </template>
+
+<style scoped>
+.map-renderer:deep(figure) {
+  display: flex;
+  flex-direction: column;
+}
+.map-renderer:deep(figure h2) {
+  width: 48rem;
+  height: 4rem;
+  display: flex;
+  align-items: end;
+}
+</style>
